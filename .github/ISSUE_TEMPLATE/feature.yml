@@ -1,0 +1,12 @@
+name: Proposta de V2
+about: Registrar ideia sem alterar o escopo do MVP
+body:
+  - type: markdown
+    attributes:
+      value: "Funcionalidades novas serão avaliadas para V2."
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema que a ideia resolve
+    validations:
+      required: true
