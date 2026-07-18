@@ -89,3 +89,7 @@ Até definição comercial, o código usa licença proprietária. Não publicar 
 ## D-020 — Imagens de infraestrutura reproduzíveis
 
 Serviços de infraestrutura usam imagens oficiais com versões fixas e existentes no registro público. O MinIO usa `minio/minio:RELEASE.2025-09-07T16-13-09Z`; mudanças de versão exigem validação do Compose de desenvolvimento e produção.
+
+## D-021 — Direção visual e plataformas
+
+O mockup em `docs/images/nexus-d20-mockup.png` é a referência visual do produto: fantasia gótica escura, superfícies em preto e grafite, detalhes dourados e hierarquia tipográfica inspirada em livros de RPG. A implementação inicial é uma aplicação web mobile-first e responsiva. O layout deve adaptar hierarquia, navegação e densidade a cada viewport, sem apenas reduzir a composição desktop. Um aplicativo Android nativo será considerado após a primeira versão web e permanece fora do MVP.

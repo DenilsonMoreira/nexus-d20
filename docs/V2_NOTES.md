@@ -1,6 +1,7 @@
 # Ideias para V2
 
-- Aplicativos nativos.
+- Aplicativo Android nativo após a primeira versão web, reutilizando contratos da API e o sistema visual responsivo quando apropriado.
+- Avaliar aplicativo nativo para outras plataformas somente após validar uso e manutenção do Android.
 - Offline completo e sincronização por conflitos.
 - VTT tático.
 - Marketplace de conteúdos.
