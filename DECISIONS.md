@@ -93,3 +93,11 @@ Serviços de infraestrutura usam imagens oficiais com versões fixas e existente
 ## D-021 — Direção visual e plataformas
 
 O mockup em `docs/images/nexus-d20-mockup.png` é a referência visual do produto: fantasia gótica escura, superfícies em preto e grafite, detalhes dourados e hierarquia tipográfica inspirada em livros de RPG. A implementação inicial é uma aplicação web mobile-first e responsiva. O layout deve adaptar hierarquia, navegação e densidade a cada viewport, sem apenas reduzir a composição desktop. Um aplicativo Android nativo será considerado após a primeira versão web e permanece fora do MVP.
+
+## D-022 — Dependências front-end reproduzíveis
+
+O lockfile do front-end deve referenciar somente o registro público `https://registry.npmjs.org/`, sem URLs de proxies ou registros internos de ambientes de desenvolvimento. Imagens Docker instalam dependências com `npm ci` para respeitar integralmente o lockfile.
+
+## D-023 — Portas locais configuráveis
+
+As portas publicadas pelo Compose de desenvolvimento possuem valores padrão documentados e podem ser substituídas por variáveis no `.env`. Endereços e portas internos entre containers permanecem fixos; a configuração serve apenas para evitar conflitos no host sem alterar a topologia da aplicação.

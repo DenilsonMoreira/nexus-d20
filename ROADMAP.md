@@ -6,6 +6,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 0 — Fundação do repositório
 
+**Status:** concluída em 18 de julho de 2026.
+
 - Monorepo, Docker Compose e variáveis de ambiente.
 - API FastAPI e front-end Next.js executáveis.
 - PostgreSQL, Redis e MinIO.

@@ -24,14 +24,19 @@ Data: 18 de julho de 2026.
 - Volume do PostgreSQL 18 configurado em `/var/lib/postgresql`.
 - A referência inválida do MinIO foi substituída por uma versão oficial existente.
 - `docker compose config --quiet`: aprovado com o arquivo `.env` local.
-- `docker compose up --build -d`: inconclusivo neste ambiente; o download das imagens excedeu dez minutos e nenhum container foi criado.
-- O aceite da Fase 0 permanece pendente até todos os health checks ficarem saudáveis.
+- O lockfile não contém referências a registros privados e a imagem web instala com `npm ci`.
+- Portas publicadas no host podem ser configuradas pelo `.env` sem alterar portas internas.
+- `docker compose up --build -d --wait`: aprovado.
+- PostgreSQL, Redis, MinIO, API e web: saudáveis.
+- Inicialização do bucket MinIO: concluída com sucesso.
+- `alembic upgrade head`: aprovado em banco vazio.
+- `alembic check`: nenhuma operação nova detectada.
+- Critério de aceite da Fase 0: concluído.
 
 ## Ferramentas locais
 
-- A instalação das dependências Python e Node excedeu o limite do ambiente.
-- As suítes locais não foram reexecutadas nesta rodada; os resultados anteriores permanecem registrados acima, mas não substituem uma nova validação.
-- GitHub CLI (`gh`) não está instalado; publicação e abertura de PR permanecem bloqueadas.
+- Validações foram executadas dentro das imagens Docker reproduzíveis.
+- Publicação é realizada diretamente com `git`, conforme o fluxo do projeto.
 
 ## Primeiro teste recomendado na máquina do desenvolvedor
 

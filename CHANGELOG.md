@@ -8,3 +8,7 @@
 - Mockup funcional responsivo.
 - Migração inicial de usuários, campanhas, membros, notas e auditoria.
 - CI, Dependabot e templates do GitHub.
+- Stack completa validada com health checks saudáveis.
+- Lockfile público e instalação front-end determinística com `npm ci`.
+- Portas locais do Compose configuráveis por ambiente.
+- Migração inicial alinhada aos modelos e aprovada pelo `alembic check`.

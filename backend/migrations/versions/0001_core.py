@@ -27,9 +27,8 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False),
         sa.PrimaryKeyConstraint("id", name="pk_users"),
-        sa.UniqueConstraint("email", name="uq_users_email"),
     )
-    op.create_index("ix_users_email", "users", ["email"], unique=False)
+    op.create_index("ix_users_email", "users", ["email"], unique=True)
     op.create_table(
         "campaigns",
         sa.Column("name", sa.String(length=160), nullable=False),

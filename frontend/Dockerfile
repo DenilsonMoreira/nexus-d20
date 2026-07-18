@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 FROM base AS development
-RUN npm install
+RUN npm ci
 COPY . .
 CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
 
