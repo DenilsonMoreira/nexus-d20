@@ -85,3 +85,7 @@ Ações administrativas e mecânicas importantes geram registros com antes/depoi
 ## D-019 — Licenciamento do código
 
 Até definição comercial, o código usa licença proprietária. Não publicar com licença permissiva por acidente.
+
+## D-020 — Imagens de infraestrutura reproduzíveis
+
+Serviços de infraestrutura usam imagens oficiais com versões fixas e existentes no registro público. O MinIO usa `minio/minio:RELEASE.2025-09-07T16-13-09Z`; mudanças de versão exigem validação do Compose de desenvolvimento e produção.
