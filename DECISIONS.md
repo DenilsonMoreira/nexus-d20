@@ -101,3 +101,7 @@ O lockfile do front-end deve referenciar somente o registro público `https://re
 ## D-023 — Portas locais configuráveis
 
 As portas publicadas pelo Compose de desenvolvimento possuem valores padrão documentados e podem ser substituídas por variáveis no `.env`. Endereços e portas internos entre containers permanecem fixos; a configuração serve apenas para evitar conflitos no host sem alterar a topologia da aplicação.
+
+## D-024 — Sessões e credenciais
+
+Senhas usam Argon2 e nunca são armazenadas ou registradas em texto puro. Tokens de acesso são JWTs curtos em cookie HTTP-only. Tokens de atualização são opacos, persistidos apenas como SHA-256, rotacionados a cada uso e revogáveis. Cookies usam `SameSite=Lax` e passam a `Secure` em produção.

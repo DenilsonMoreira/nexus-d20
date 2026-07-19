@@ -12,3 +12,6 @@
 - Lockfile público e instalação front-end determinística com `npm ci`.
 - Portas locais do Compose configuráveis por ambiente.
 - Migração inicial alinhada aos modelos e aprovada pelo `alembic check`.
+- Cadastro, login, refresh rotativo e logout com cookies HTTP-only.
+- Senhas Argon2 e tokens de atualização armazenados somente como hash.
+- Erros de autenticação com códigos estáveis e mensagens em português.

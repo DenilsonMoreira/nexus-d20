@@ -13,7 +13,7 @@ Cada item deve resultar em PR independente ou em um conjunto pequeno e coerente.
 
 ## Próximos PRs
 
-1. **Autenticação e sessões**
+1. **Autenticação e sessões** — concluído
    - cadastro, login, refresh, logout e hash Argon2;
    - cookies HTTP-only;
    - testes de sessão.

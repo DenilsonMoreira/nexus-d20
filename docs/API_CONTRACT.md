@@ -6,6 +6,15 @@ Base: `/api/v1`
 
 - `GET /health`
 
+## Identidade
+
+- `POST /auth/register` — cria usuário e sessão.
+- `POST /auth/login` — autentica e cria sessão.
+- `POST /auth/refresh` — rotaciona a sessão e emite novos cookies.
+- `POST /auth/logout` — revoga a sessão atual e remove cookies.
+
+Os tokens são enviados somente em cookies HTTP-only. O token de atualização é aceito apenas sob `/api/v1/auth` e cada uso invalida o token anterior.
+
 ## Regras puras implementadas na fundação
 
 - `POST /rules/attacks/resolve`
