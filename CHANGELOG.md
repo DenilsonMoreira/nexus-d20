@@ -15,3 +15,7 @@
 - Cadastro, login, refresh rotativo e logout com cookies HTTP-only.
 - Senhas Argon2 e tokens de atualização armazenados somente como hash.
 - Erros de autenticação com códigos estáveis e mensagens em português.
+- Campanhas isoladas por participação e `campaign_id` no back-end.
+- Convites expiráveis vinculados ao e-mail, com token persistido apenas como hash.
+- Papéis de mestre, jogador e observador, com proteção do proprietário.
+- Arquivamento de campanha em vez de exclusão destrutiva.

@@ -35,6 +35,7 @@ class Campaign(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     name: Mapped[str] = mapped_column(String(160))
     owner_user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"))
     ruleset_code: Mapped[str] = mapped_column(String(40), default="dnd5e-2014")
+    is_archived: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
 class CampaignMember(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -44,6 +45,22 @@ class CampaignMember(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     campaign_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("campaigns.id"))
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"))
     role: Mapped[str] = mapped_column(String(30))
+
+
+class Invite(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "invites"
+
+    campaign_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("campaigns.id"), index=True
+    )
+    invited_by_user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id")
+    )
+    email: Mapped[str] = mapped_column(String(320), index=True)
+    role: Mapped[str] = mapped_column(String(30))
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class Note(UUIDPrimaryKeyMixin, TimestampMixin, Base):

@@ -15,6 +15,21 @@ Base: `/api/v1`
 
 Os tokens são enviados somente em cookies HTTP-only. O token de atualização é aceito apenas sob `/api/v1/auth` e cada uso invalida o token anterior.
 
+## Campanhas
+
+- `POST /campaigns` — cria campanha e torna o autor mestre proprietário.
+- `GET /campaigns` — lista somente campanhas das quais o usuário participa.
+- `GET /campaigns/{campaign_id}` — retorna campanha acessível ao membro.
+- `PATCH /campaigns/{campaign_id}` — altera campanha; exige mestre.
+- `DELETE /campaigns/{campaign_id}` — arquiva campanha; exige mestre.
+- `POST /campaigns/{campaign_id}/invites` — cria convite de jogador ou observador.
+- `POST /campaign-invites/{token}/accept` — aceita convite vinculado ao e-mail autenticado.
+- `GET /campaigns/{campaign_id}/members` — lista participantes; exige mestre.
+- `PATCH /campaigns/{campaign_id}/members/{user_id}` — altera jogador/observador.
+- `DELETE /campaigns/{campaign_id}/members/{user_id}` — remove participante.
+
+Não membros recebem `campaign_not_found` com HTTP 404, inclusive quando o UUID existe. O token bruto do convite é retornado somente no momento da criação ao mestre; o banco armazena apenas seu hash.
+
 ## Regras puras implementadas na fundação
 
 - `POST /rules/attacks/resolve`

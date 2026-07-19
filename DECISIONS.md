@@ -105,3 +105,7 @@ As portas publicadas pelo Compose de desenvolvimento possuem valores padrão doc
 ## D-024 — Sessões e credenciais
 
 Senhas usam Argon2 e nunca são armazenadas ou registradas em texto puro. Tokens de acesso são JWTs curtos em cookie HTTP-only. Tokens de atualização são opacos, persistidos apenas como SHA-256, rotacionados a cada uso e revogáveis. Cookies usam `SameSite=Lax` e passam a `Secure` em produção.
+
+## D-025 — Isolamento de campanhas e convites
+
+Toda rota de campanha resolve o usuário autenticado e sua participação no banco; conhecer um `campaign_id` nunca concede acesso. Não membros recebem 404 para reduzir enumeração, enquanto membros sem papel suficiente recebem 403. Convites são opacos, persistidos apenas como SHA-256, expiram em sete dias e só podem ser aceitos pelo e-mail destinatário. O proprietário permanece mestre e não pode ser removido ou rebaixado. Exclusão de campanha arquiva o registro para permitir recuperação segura.

@@ -18,7 +18,7 @@ Cada item deve resultar em PR independente ou em um conjunto pequeno e coerente.
    - cookies HTTP-only;
    - testes de sessão.
 
-2. **Campanhas e convites**
+2. **Campanhas e convites** — concluído
    - CRUD, papéis e convites;
    - middleware de membro;
    - isolamento multi-tenant.
