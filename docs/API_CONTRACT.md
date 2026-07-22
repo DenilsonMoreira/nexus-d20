@@ -30,6 +30,13 @@ Os tokens são enviados somente em cookies HTTP-only. O token de atualização �
 
 Não membros recebem `campaign_not_found` com HTTP 404, inclusive quando o UUID existe. O token bruto do convite é retornado somente no momento da criação ao mestre; o banco armazena apenas seu hash.
 
+## Auditoria
+
+- `GET /campaigns/{campaign_id}/audit` — lista eventos; exige mestre da campanha.
+- `POST /campaign-audits/{audit_id}/reverse` — reverte evento elegível com motivo.
+
+Reversões são permitidas somente quando o evento foi marcado como reversível e o estado atual ainda corresponde ao estado posterior registrado. A reversão preserva o evento original, registra responsável, horário e motivo, e cria um novo evento com `reversal_of_id`. Não membros recebem 404 sem confirmação da existência do evento.
+
 ## Regras puras implementadas na fundação
 
 - `POST /rules/attacks/resolve`

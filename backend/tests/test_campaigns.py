@@ -92,6 +92,21 @@ async def test_campaign_membership_enforces_tenant_isolation() -> None:
         assert changed_role.json()["role"] == "observer"
         assert (await player.get(f"/api/v1/campaigns/{campaign_id}")).json()["role"] == "observer"
 
+        audit_list = await master.get(f"/api/v1/campaigns/{campaign_id}/audit")
+        assert audit_list.status_code == 200
+        assert audit_list.json()["items"]
+        assert (await player.get(f"/api/v1/campaigns/{campaign_id}/audit")).status_code == 403
+
+        creation_audit = next(
+            item for item in audit_list.json()["items"] if item["action"] == "campaign.created"
+        )
+        unsafe_reversal = await master.post(
+            f"/api/v1/campaign-audits/{creation_audit['id']}/reverse",
+            json={"reason": "Operação sem inversão segura"},
+        )
+        assert unsafe_reversal.status_code == 409
+        assert unsafe_reversal.json()["error"]["code"] == "audit_not_reversible"
+
         removed = await master.delete(
             f"/api/v1/campaigns/{campaign_id}/members/{player_id}"
         )
@@ -102,6 +117,37 @@ async def test_campaign_membership_enforces_tenant_isolation() -> None:
         assert archived.status_code == 204
         assert (await master.get(f"/api/v1/campaigns/{campaign_id}")).status_code == 404
         assert (await player.get(f"/api/v1/campaigns/{campaign_id}")).status_code == 404
+
+        async with SessionLocal() as db:
+            archived_audit_id = await db.scalar(
+                select(AuditLog.id).where(
+                    AuditLog.campaign_id == campaign_id,
+                    AuditLog.action == "campaign.archived",
+                )
+            )
+        assert archived_audit_id is not None
+
+        hidden_audit = await outsider.post(
+            f"/api/v1/campaign-audits/{archived_audit_id}/reverse",
+            json={"reason": "Tentativa externa"},
+        )
+        assert hidden_audit.status_code == 404
+
+        reversed_audit = await master.post(
+            f"/api/v1/campaign-audits/{archived_audit_id}/reverse",
+            json={"reason": "Campanha arquivada por engano"},
+        )
+        assert reversed_audit.status_code == 200
+        assert reversed_audit.json()["reversal_of_id"] == str(archived_audit_id)
+        assert reversed_audit.json()["reason"] == "Campanha arquivada por engano"
+        assert (await master.get(f"/api/v1/campaigns/{campaign_id}")).status_code == 200
+
+        duplicate_reversal = await master.post(
+            f"/api/v1/campaign-audits/{archived_audit_id}/reverse",
+            json={"reason": "Segunda tentativa de reversão"},
+        )
+        assert duplicate_reversal.status_code == 409
+        assert duplicate_reversal.json()["error"]["code"] == "audit_already_reversed"
 
         async with SessionLocal() as db:
             actions = set(
@@ -118,6 +164,7 @@ async def test_campaign_membership_enforces_tenant_isolation() -> None:
             "campaign_member.role_updated",
             "campaign_member.removed",
             "campaign.archived",
+            "campaign.archived.reversed",
         }.issubset(actions)
     finally:
         for client in clients:

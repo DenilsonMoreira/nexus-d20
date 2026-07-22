@@ -12,6 +12,7 @@ from app.api.dependencies import (
 )
 from app.core.errors import AppError
 from app.models import AuditLog, Campaign, CampaignMember, Invite, User
+from app.schemas.audit import AuditListResponse, AuditResponse
 from app.schemas.campaigns import (
     CampaignCreateRequest,
     CampaignListResponse,
@@ -24,8 +25,9 @@ from app.schemas.campaigns import (
     MemberRoleUpdateRequest,
     MembershipResponse,
 )
+from app.services.audit import record_audit
 from app.services.auth import token_digest
-from app.services.campaigns import create_invite, record_audit
+from app.services.campaigns import create_invite
 
 router = APIRouter()
 invite_router = APIRouter()
@@ -58,10 +60,11 @@ async def create_campaign(
     db.add(CampaignMember(campaign_id=campaign.id, user_id=current_user.id, role="master"))
     record_audit(
         db,
-        campaign=campaign,
-        actor=current_user,
+        campaign_id=campaign.id,
+        actor_user_id=current_user.id,
         action="campaign.created",
         entity_type="campaign",
+        entity_id=campaign.id,
         after_data={"name": campaign.name, "ruleset_code": campaign.ruleset_code},
     )
     await db.commit()
@@ -106,10 +109,11 @@ async def update_campaign(
     access.campaign.name = payload.name.strip()
     record_audit(
         db,
-        campaign=access.campaign,
-        actor=current_user,
+        campaign_id=access.campaign.id,
+        actor_user_id=current_user.id,
         action="campaign.updated",
         entity_type="campaign",
+        entity_id=access.campaign.id,
         before_data={"name": old_name},
         after_data={"name": access.campaign.name},
     )
@@ -127,12 +131,14 @@ async def archive_campaign(
     access.campaign.is_archived = True
     record_audit(
         db,
-        campaign=access.campaign,
-        actor=current_user,
+        campaign_id=access.campaign.id,
+        actor_user_id=current_user.id,
         action="campaign.archived",
         entity_type="campaign",
+        entity_id=access.campaign.id,
         before_data={"is_archived": False},
         after_data={"is_archived": True},
+        is_reversible=True,
     )
     await db.commit()
 
@@ -156,17 +162,14 @@ async def invite_member(
         role=payload.role,
     )
     await db.flush()
-    db.add(
-        AuditLog(
-            campaign_id=access.campaign.id,
-            actor_user_id=current_user.id,
-            entity_type="invite",
-            entity_id=invite.id,
-            action="invite.created",
-            before_data=None,
-            after_data={"email": invite.email, "role": invite.role},
-            reason=None,
-        )
+    record_audit(
+        db,
+        campaign_id=access.campaign.id,
+        actor_user_id=current_user.id,
+        entity_type="invite",
+        entity_id=invite.id,
+        action="invite.created",
+        after_data={"email": invite.email, "role": invite.role},
     )
     await db.commit()
     await db.refresh(invite)
@@ -206,6 +209,23 @@ async def list_members(
     )
 
 
+@router.get("/{campaign_id}/audit", response_model=AuditListResponse)
+async def list_audit(
+    access: CampaignMaster,
+    db: DatabaseSession,
+) -> AuditListResponse:
+    audits = list(
+        (
+            await db.scalars(
+                select(AuditLog)
+                .where(AuditLog.campaign_id == access.campaign.id)
+                .order_by(AuditLog.created_at.desc(), AuditLog.id.desc())
+            )
+        ).all()
+    )
+    return AuditListResponse(items=[AuditResponse.model_validate(audit) for audit in audits])
+
+
 @router.patch(
     "/{campaign_id}/members/{member_user_id}", response_model=CampaignMemberResponse
 )
@@ -233,17 +253,15 @@ async def update_member_role(
     member, user = row
     old_role = member.role
     member.role = payload.role
-    db.add(
-        AuditLog(
-            campaign_id=access.campaign.id,
-            actor_user_id=current_user.id,
-            entity_type="campaign_member",
-            entity_id=member.id,
-            action="campaign_member.role_updated",
-            before_data={"role": old_role},
-            after_data={"role": member.role},
-            reason=None,
-        )
+    record_audit(
+        db,
+        campaign_id=access.campaign.id,
+        actor_user_id=current_user.id,
+        entity_type="campaign_member",
+        entity_id=member.id,
+        action="campaign_member.role_updated",
+        before_data={"role": old_role},
+        after_data={"role": member.role},
     )
     await db.commit()
     return CampaignMemberResponse(
@@ -271,17 +289,14 @@ async def remove_member(
     )
     if member is None:
         raise AppError(404, "campaign_member_not_found", "Participante não encontrado.")
-    db.add(
-        AuditLog(
-            campaign_id=access.campaign.id,
-            actor_user_id=current_user.id,
-            entity_type="campaign_member",
-            entity_id=member.id,
-            action="campaign_member.removed",
-            before_data={"user_id": str(member.user_id), "role": member.role},
-            after_data=None,
-            reason=None,
-        )
+    record_audit(
+        db,
+        campaign_id=access.campaign.id,
+        actor_user_id=current_user.id,
+        entity_type="campaign_member",
+        entity_id=member.id,
+        action="campaign_member.removed",
+        before_data={"user_id": str(member.user_id), "role": member.role},
     )
     await db.delete(member)
     await db.commit()
@@ -320,17 +335,14 @@ async def accept_invite(
         role=invite.role,
     )
     db.add(member)
-    db.add(
-        AuditLog(
-            campaign_id=campaign.id,
-            actor_user_id=current_user.id,
-            entity_type="invite",
-            entity_id=invite.id,
-            action="invite.accepted",
-            before_data=None,
-            after_data={"role": invite.role},
-            reason=None,
-        )
+    record_audit(
+        db,
+        campaign_id=campaign.id,
+        actor_user_id=current_user.id,
+        entity_type="invite",
+        entity_id=invite.id,
+        action="invite.accepted",
+        after_data={"role": invite.role},
     )
     await db.commit()
     await db.refresh(campaign)

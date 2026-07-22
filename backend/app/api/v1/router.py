@@ -1,9 +1,10 @@
 from fastapi import APIRouter
 
-from app.api.v1.routes import auth, campaigns, rules
+from app.api.v1.routes import audits, auth, campaigns, rules
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(audits.router, prefix="/campaign-audits", tags=["audit"])
 api_router.include_router(
     campaigns.invite_router, prefix="/campaign-invites", tags=["campaigns"]
 )

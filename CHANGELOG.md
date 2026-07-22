@@ -19,3 +19,6 @@
 - Convites expiráveis vinculados ao e-mail, com token persistido apenas como hash.
 - Papéis de mestre, jogador e observador, com proteção do proprietário.
 - Arquivamento de campanha em vez de exclusão destrutiva.
+- Serviço transacional reutilizável de auditoria com antes/depois.
+- Metadados de reversibilidade, responsável, horário e motivo.
+- Reversão segura de arquivamento de campanha com proteção contra repetição e estado divergente.

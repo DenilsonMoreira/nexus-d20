@@ -23,7 +23,7 @@ Cada item deve resultar em PR independente ou em um conjunto pequeno e coerente.
    - middleware de membro;
    - isolamento multi-tenant.
 
-3. **Auditoria reutilizável**
+3. **Auditoria reutilizável** — concluído
    - serviço transacional;
    - antes/depois;
    - motivo e reversão.

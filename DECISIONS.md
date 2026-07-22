@@ -109,3 +109,7 @@ Senhas usam Argon2 e nunca são armazenadas ou registradas em texto puro. Tokens
 ## D-025 — Isolamento de campanhas e convites
 
 Toda rota de campanha resolve o usuário autenticado e sua participação no banco; conhecer um `campaign_id` nunca concede acesso. Não membros recebem 404 para reduzir enumeração, enquanto membros sem papel suficiente recebem 403. Convites são opacos, persistidos apenas como SHA-256, expiram em sete dias e só podem ser aceitos pelo e-mail destinatário. O proprietário permanece mestre e não pode ser removido ou rebaixado. Exclusão de campanha arquiva o registro para permitir recuperação segura.
+
+## D-026 — Auditoria transacional e reversão segura
+
+Eventos de auditoria são gravados na mesma transação da alteração de domínio e registram entidade, ação, responsável, antes, depois e motivo quando aplicável. Apenas eventos explicitamente marcados como reversíveis podem ser desfeitos. A reversão exige mestre, motivo, compatibilidade com o estado atual e cria um novo evento ligado ao original; o histórico nunca é apagado. Inicialmente, somente o arquivamento de campanha possui reversão automática comprovadamente segura.
