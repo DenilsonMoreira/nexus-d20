@@ -113,3 +113,7 @@ Toda rota de campanha resolve o usuário autenticado e sua participação no ban
 ## D-026 — Auditoria transacional e reversão segura
 
 Eventos de auditoria são gravados na mesma transação da alteração de domínio e registram entidade, ação, responsável, antes, depois e motivo quando aplicável. Apenas eventos explicitamente marcados como reversíveis podem ser desfeitos. A reversão exige mestre, motivo, compatibilidade com o estado atual e cria um novo evento ligado ao original; o histórico nunca é apagado. Inicialmente, somente o arquivamento de campanha possui reversão automática comprovadamente segura.
+
+## D-027 — Recuperação de acesso
+
+Recuperação de senha usa token opaco de uso único, com validade de 30 minutos e persistência somente do SHA-256. A solicitação sempre retorna a mesma resposta, exista ou não a conta. Ao redefinir a senha, todas as sessões são revogadas e a versão de autenticação do usuário é incrementada, invalidando também JWTs já emitidos. Desenvolvimento usa Mailpit oficial com versão fixa; produção exige SMTP configurado por ambiente.

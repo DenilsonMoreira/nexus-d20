@@ -12,8 +12,12 @@ Base: `/api/v1`
 - `POST /auth/login` — autentica e cria sessão.
 - `POST /auth/refresh` — rotaciona a sessão e emite novos cookies.
 - `POST /auth/logout` — revoga a sessão atual e remove cookies.
+- `POST /auth/password-reset/request` — solicita recuperação sem revelar se a conta existe.
+- `POST /auth/password-reset/confirm` — redefine a senha com token de uso único.
 
 Os tokens são enviados somente em cookies HTTP-only. O token de atualização é aceito apenas sob `/api/v1/auth` e cada uso invalida o token anterior.
+
+Tokens de recuperação expiram em 30 minutos, são persistidos somente como hash e não podem ser reutilizados. A redefinição revoga todas as sessões e invalida tokens de acesso anteriores.
 
 ## Campanhas
 

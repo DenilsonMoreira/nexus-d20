@@ -18,7 +18,7 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 1 — Identidade, campanhas e permissões
 
-**Status:** em andamento.
+**Status:** concluída em 22 de julho de 2026.
 
 - Cadastro, login, refresh token e recuperação de acesso.
 - Criação de campanha.

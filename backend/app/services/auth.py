@@ -33,6 +33,7 @@ def create_access_token(user: User) -> str:
         {
             "sub": str(user.id),
             "type": "access",
+            "ver": user.auth_version,
             "iat": now,
             "exp": now + timedelta(minutes=settings.access_token_ttl_minutes),
         },
@@ -77,11 +78,11 @@ async def revoke_refresh_token(db: AsyncSession, raw_token: str) -> None:
         session.revoked_at = datetime.now(UTC)
 
 
-def decode_access_token(token: str) -> uuid.UUID:
+def decode_access_token(token: str) -> tuple[uuid.UUID, int]:
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=["HS256"])
         if payload.get("type") != "access":
             raise ValueError
-        return uuid.UUID(payload["sub"])
+        return uuid.UUID(payload["sub"]), int(payload["ver"])
     except (jwt.PyJWTError, KeyError, TypeError, ValueError) as error:
         raise AppError(401, "invalid_access_token", "Acesso não autenticado.") from error

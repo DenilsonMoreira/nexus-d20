@@ -22,3 +22,7 @@
 - Serviço transacional reutilizável de auditoria com antes/depois.
 - Metadados de reversibilidade, responsável, horário e motivo.
 - Reversão segura de arquivamento de campanha com proteção contra repetição e estado divergente.
+- Recuperação de acesso por e-mail com resposta anti-enumeração.
+- Tokens de redefinição de uso único armazenados somente como hash.
+- Revogação de sessões e JWTs após troca de senha.
+- Mailpit versionado para inspeção de e-mails no desenvolvimento.

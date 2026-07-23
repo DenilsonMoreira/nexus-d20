@@ -21,9 +21,9 @@ async def get_current_user(
 ) -> User:
     if access_token is None:
         raise AppError(401, "authentication_required", "Autenticação necessária.")
-    user_id = decode_access_token(access_token)
+    user_id, auth_version = decode_access_token(access_token)
     user = await db.get(User, user_id)
-    if user is None or not user.is_active:
+    if user is None or not user.is_active or user.auth_version != auth_version:
         raise AppError(401, "authentication_required", "Autenticação necessária.")
     return user
 

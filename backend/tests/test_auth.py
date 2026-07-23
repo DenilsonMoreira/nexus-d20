@@ -6,8 +6,8 @@ from sqlalchemy import delete, select
 
 from app.core.database import SessionLocal
 from app.main import app
-from app.models import Session, User
-from app.services.auth import hash_password, verify_password
+from app.models import PasswordResetToken, Session, User
+from app.services.auth import hash_password, token_digest, verify_password
 
 
 def test_password_is_hashed_with_argon2() -> None:
@@ -88,3 +88,98 @@ async def test_login_rejects_invalid_credentials() -> None:
             "details": {},
         }
     }
+
+
+@pytest.mark.asyncio
+async def test_password_reset_is_single_use_and_revokes_sessions(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    email = f"recuperacao-{uuid.uuid4()}@example.com"
+    delivered_tokens: list[tuple[str, str]] = []
+
+    async def capture_email(recipient: str, token: str) -> None:
+        delivered_tokens.append((recipient, token))
+
+    monkeypatch.setattr(
+        "app.api.v1.routes.auth.deliver_password_reset_safely",
+        capture_email,
+    )
+
+    try:
+        async with AsyncClient(
+            transport=ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            registered = await client.post(
+                "/api/v1/auth/register",
+                json={
+                    "email": email,
+                    "display_name": "Recuperação",
+                    "password": "senha-antiga-segura",
+                },
+            )
+            assert registered.status_code == 201
+            old_refresh = registered.cookies["refresh_token"]
+
+            unknown = await client.post(
+                "/api/v1/auth/password-reset/request",
+                json={"email": f"inexistente-{uuid.uuid4()}@example.com"},
+            )
+            requested = await client.post(
+                "/api/v1/auth/password-reset/request",
+                json={"email": email},
+            )
+            assert unknown.status_code == requested.status_code == 202
+            assert unknown.json() == requested.json()
+            assert len(delivered_tokens) == 1
+            recipient, raw_token = delivered_tokens[0]
+            assert recipient == email
+
+            async with SessionLocal() as db:
+                stored_hash = await db.scalar(
+                    select(PasswordResetToken.token_hash)
+                    .join(User, User.id == PasswordResetToken.user_id)
+                    .where(User.email == email)
+                )
+            assert stored_hash == token_digest(raw_token)
+            assert stored_hash != raw_token
+
+            confirmed = await client.post(
+                "/api/v1/auth/password-reset/confirm",
+                json={"token": raw_token, "new_password": "senha-nova-bem-segura"},
+            )
+            assert confirmed.status_code == 200
+
+            assert (await client.get("/api/v1/campaigns")).status_code == 401
+            old_session = await client.post(
+                "/api/v1/auth/refresh",
+                headers={"cookie": f"refresh_token={old_refresh}"},
+            )
+            assert old_session.status_code == 401
+
+            old_login = await client.post(
+                "/api/v1/auth/login",
+                json={"email": email, "password": "senha-antiga-segura"},
+            )
+            assert old_login.status_code == 401
+            new_login = await client.post(
+                "/api/v1/auth/login",
+                json={"email": email, "password": "senha-nova-bem-segura"},
+            )
+            assert new_login.status_code == 200
+
+            reused = await client.post(
+                "/api/v1/auth/password-reset/confirm",
+                json={"token": raw_token, "new_password": "terceira-senha-segura"},
+            )
+            assert reused.status_code == 400
+            assert reused.json()["error"]["code"] == "invalid_password_reset"
+    finally:
+        async with SessionLocal() as db:
+            user_id = await db.scalar(select(User.id).where(User.email == email))
+            if user_id is not None:
+                await db.execute(
+                    delete(PasswordResetToken).where(PasswordResetToken.user_id == user_id)
+                )
+                await db.execute(delete(Session).where(Session.user_id == user_id))
+                await db.execute(delete(User).where(User.id == user_id))
+                await db.commit()

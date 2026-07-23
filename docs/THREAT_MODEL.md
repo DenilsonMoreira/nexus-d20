@@ -20,6 +20,8 @@
 - alteração concorrente de inventário;
 - injeção em conteúdo personalizado;
 - abuso de endpoints públicos.
+- enumeração de contas pela recuperação de acesso.
+- reutilização ou vazamento de token de recuperação.
 
 ## Controles
 
@@ -32,3 +34,6 @@
 - auditoria;
 - rate limiting;
 - CSP e sanitização.
+- resposta uniforme para solicitação de recuperação;
+- tokens opacos, curtos no tempo, armazenados como hash e de uso único;
+- revogação de todas as sessões após troca de senha.

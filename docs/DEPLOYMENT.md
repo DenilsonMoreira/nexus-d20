@@ -16,6 +16,8 @@ Use `compose.prod.yaml` em uma VPS com:
 - monitoramento;
 - SMTP ou provedor de autenticação configurado.
 
+Para e-mail transacional, configurar `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_STARTTLS` e `MAIL_FROM`. O Mailpit pertence somente ao desenvolvimento e não deve ser publicado em produção. Validar a entrega de recuperação de acesso antes de liberar usuários.
+
 ```bash
 docker compose -f compose.prod.yaml up -d --build
 ```

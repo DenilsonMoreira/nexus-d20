@@ -36,6 +36,7 @@ Serviços:
 - API: http://localhost:8000
 - Swagger: http://localhost:8000/docs
 - MinIO Console: http://localhost:9001
+- Mailpit (e-mails locais): http://localhost:8025
 
 Credenciais locais padrão estão em `.env.example`. Troque todas antes de publicar.
 

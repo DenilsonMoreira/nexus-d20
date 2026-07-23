@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Cookie, Depends, Response, status
+from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,7 +8,14 @@ from app.core.config import settings
 from app.core.database import get_session
 from app.core.errors import AppError
 from app.models import User
-from app.schemas.auth import AuthResponse, LoginRequest, RegisterRequest
+from app.schemas.auth import (
+    AuthResponse,
+    LoginRequest,
+    MessageResponse,
+    PasswordResetConfirmRequest,
+    PasswordResetRequest,
+    RegisterRequest,
+)
 from app.services.auth import (
     consume_refresh_token,
     create_access_token,
@@ -17,6 +24,8 @@ from app.services.auth import (
     revoke_refresh_token,
     verify_password,
 )
+from app.services.email import deliver_password_reset_safely
+from app.services.password_reset import create_password_reset_token, reset_password
 
 router = APIRouter()
 DatabaseSession = Annotated[AsyncSession, Depends(get_session)]
@@ -111,3 +120,33 @@ async def logout(
         await db.commit()
     response.delete_cookie("access_token", path="/")
     response.delete_cookie("refresh_token", path="/api/v1/auth")
+
+
+@router.post(
+    "/password-reset/request",
+    response_model=MessageResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def request_password_reset(
+    payload: PasswordResetRequest,
+    background_tasks: BackgroundTasks,
+    db: DatabaseSession,
+) -> MessageResponse:
+    user = await db.scalar(select(User).where(User.email == payload.email))
+    if user is not None and user.is_active:
+        token = await create_password_reset_token(db, user)
+        await db.commit()
+        background_tasks.add_task(deliver_password_reset_safely, user.email, token)
+    return MessageResponse(
+        message="Se a conta existir, enviaremos instruções para recuperação de acesso."
+    )
+
+
+@router.post("/password-reset/confirm", response_model=MessageResponse)
+async def confirm_password_reset(
+    payload: PasswordResetConfirmRequest,
+    db: DatabaseSession,
+) -> MessageResponse:
+    await reset_password(db, payload.token, payload.new_password)
+    await db.commit()
+    return MessageResponse(message="Senha redefinida com sucesso.")
