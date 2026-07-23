@@ -117,3 +117,7 @@ Eventos de auditoria são gravados na mesma transação da alteração de domín
 ## D-027 — Recuperação de acesso
 
 Recuperação de senha usa token opaco de uso único, com validade de 30 minutos e persistência somente do SHA-256. A solicitação sempre retorna a mesma resposta, exista ou não a conta. Ao redefinir a senha, todas as sessões são revogadas e a versão de autenticação do usuário é incrementada, invalidando também JWTs já emitidos. Desenvolvimento usa Mailpit oficial com versão fixa; produção exige SMTP configurado por ambiente.
+
+## D-028 — Propriedade e visibilidade da ficha
+
+Cada personagem pertence a uma campanha e possui um usuário responsável que deve ser mestre ou jogador participante. O mestre enxerga e edita todas as fichas da campanha; o jogador enxerga e edita somente as próprias; observadores e outros jogadores não recebem a ficha no payload. Tentativas de acesso direto sem permissão retornam 404. Criação e alterações mecânicas geram auditoria transacional com antes e depois; modificadores de atributo são calculados pela API segundo a regra de 2014.

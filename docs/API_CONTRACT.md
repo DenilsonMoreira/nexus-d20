@@ -41,6 +41,15 @@ Não membros recebem `campaign_not_found` com HTTP 404, inclusive quando o UUID 
 
 Reversões são permitidas somente quando o evento foi marcado como reversível e o estado atual ainda corresponde ao estado posterior registrado. A reversão preserva o evento original, registra responsável, horário e motivo, e cria um novo evento com `reversal_of_id`. Não membros recebem 404 sem confirmação da existência do evento.
 
+## Personagens
+
+- `POST /campaigns/{campaign_id}/characters` — cria ficha; jogador cria para si e mestre pode atribuir a mestre ou jogador da campanha.
+- `GET /campaigns/{campaign_id}/characters` — mestre lista todas; jogador lista somente as próprias; observador recebe lista vazia.
+- `GET /characters/{character_id}` — retorna ficha somente ao mestre da campanha ou ao jogador responsável.
+- `PATCH /characters/{character_id}` — altera identidade, atributos, PV, CA, iniciativa e deslocamento.
+
+Modificadores de atributo são derivados pela API e nunca persistidos ou recalculados como fonte de verdade pelo cliente. Acesso direto sem visibilidade retorna `character_not_found` com HTTP 404. Criação e atualização registram auditoria transacional; o campo opcional `reason` documenta a motivação da edição.
+
 ## Regras puras implementadas na fundação
 
 - `POST /rules/attacks/resolve`

@@ -26,3 +26,6 @@
 - Tokens de redefinição de uso único armazenados somente como hash.
 - Revogação de sessões e JWTs após troca de senha.
 - Mailpit versionado para inspeção de e-mails no desenvolvimento.
+- Fase 2 iniciada com ficha básica persistida, validada e auditada.
+- Endpoints multi-tenant para criação, listagem, leitura e atualização de personagens.
+- Painel responsivo conectado à API, com composição desktop e navegação móvel gótica.

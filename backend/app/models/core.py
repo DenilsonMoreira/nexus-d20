@@ -2,7 +2,17 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -57,6 +67,54 @@ class CampaignMember(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     campaign_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("campaigns.id"))
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"))
     role: Mapped[str] = mapped_column(String(30))
+
+
+class Character(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "characters"
+    __table_args__ = (
+        CheckConstraint("level BETWEEN 1 AND 20", name="level_range"),
+        CheckConstraint(
+            "hit_points_current >= 0 AND hit_points_current <= hit_points_max",
+            name="hit_points_range",
+        ),
+        CheckConstraint("hit_points_max >= 1", name="hit_points_max_positive"),
+        CheckConstraint("temporary_hit_points >= 0", name="temporary_hit_points_positive"),
+        CheckConstraint("armor_class BETWEEN 0 AND 99", name="armor_class_range"),
+        CheckConstraint("initiative BETWEEN -20 AND 30", name="initiative_range"),
+        CheckConstraint("speed_meters BETWEEN 0 AND 999", name="speed_meters_range"),
+        CheckConstraint(
+            "strength BETWEEN 1 AND 30 AND dexterity BETWEEN 1 AND 30 "
+            "AND constitution BETWEEN 1 AND 30 AND intelligence BETWEEN 1 AND 30 "
+            "AND wisdom BETWEEN 1 AND 30 AND charisma BETWEEN 1 AND 30",
+            name="ability_scores_range",
+        ),
+    )
+
+    campaign_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("campaigns.id"), index=True
+    )
+    owner_user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id"), index=True
+    )
+    name: Mapped[str] = mapped_column(String(160))
+    race_name: Mapped[str] = mapped_column(String(120), default="")
+    class_name: Mapped[str] = mapped_column(String(120), default="")
+    subclass_name: Mapped[str] = mapped_column(String(120), default="")
+    level: Mapped[int] = mapped_column(Integer, default=1)
+    background: Mapped[str] = mapped_column(String(160), default="")
+    alignment: Mapped[str] = mapped_column(String(80), default="")
+    hit_points_current: Mapped[int] = mapped_column(Integer, default=1)
+    hit_points_max: Mapped[int] = mapped_column(Integer, default=1)
+    temporary_hit_points: Mapped[int] = mapped_column(Integer, default=0)
+    armor_class: Mapped[int] = mapped_column(Integer, default=10)
+    initiative: Mapped[int] = mapped_column(Integer, default=0)
+    speed_meters: Mapped[int] = mapped_column(Integer, default=9)
+    strength: Mapped[int] = mapped_column(Integer, default=10)
+    dexterity: Mapped[int] = mapped_column(Integer, default=10)
+    constitution: Mapped[int] = mapped_column(Integer, default=10)
+    intelligence: Mapped[int] = mapped_column(Integer, default=10)
+    wisdom: Mapped[int] = mapped_column(Integer, default=10)
+    charisma: Mapped[int] = mapped_column(Integer, default=10)
 
 
 class Invite(UUIDPrimaryKeyMixin, TimestampMixin, Base):

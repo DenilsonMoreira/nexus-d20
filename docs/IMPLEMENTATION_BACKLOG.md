@@ -28,9 +28,11 @@ Cada item deve resultar em PR independente ou em um conjunto pequeno e coerente.
    - antes/depois;
    - motivo e reversão.
 
-4. **Ficha básica**
-   - personagem, atributos, modificadores, PV, CA e movimento;
-   - gráfico conectado à API.
+4. **Ficha básica** — em andamento
+   - [x] personagem, atributos, modificadores, PV, CA e movimento;
+   - [x] gráfico responsivo conectado à API;
+   - [ ] edição completa da ficha na interface;
+   - [ ] proficiências e recursos.
 
 5. **Profissões e visibilidade**
    - domínios artesanais;

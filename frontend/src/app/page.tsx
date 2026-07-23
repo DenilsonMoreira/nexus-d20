@@ -1,79 +1,272 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
 import { AbilityRadar } from "@/components/AbilityRadar";
-import { DurabilityCard } from "@/components/DurabilityCard";
-import { MasterGroupCard } from "@/components/MasterGroupCard";
+import {
+  type ActiveCharacter,
+  type Character,
+  loadActiveCharacter,
+} from "@/lib/characters";
 import styles from "./page.module.css";
 
-const abilities = [
-  { label: "CARISMA", score: 8, modifier: -1 },
-  { label: "INTELIGÊNCIA", score: 10, modifier: 0 },
-  { label: "SABEDORIA", score: 15, modifier: 2 },
-  { label: "FORÇA", score: 12, modifier: 1 },
-  { label: "DESTREZA", score: 16, modifier: 3 },
-  { label: "CONSTITUIÇÃO", score: 14, modifier: 2 },
+const demoCharacter: Character = {
+  id: "demo",
+  campaign_id: "demo",
+  owner_user_id: "demo",
+  name: "Nox Brasalume",
+  race_name: "Humano variante",
+  class_name: "Monge",
+  subclass_name: "",
+  level: 2,
+  background: "Forasteiro",
+  alignment: "Neutro",
+  hit_points_current: 17,
+  hit_points_max: 17,
+  temporary_hit_points: 0,
+  armor_class: 16,
+  initiative: 3,
+  speed_meters: 9,
+  abilities: [
+    { code: "charisma", label: "CARISMA", score: 8, modifier: -1 },
+    { code: "intelligence", label: "INTELIGÊNCIA", score: 10, modifier: 0 },
+    { code: "wisdom", label: "SABEDORIA", score: 15, modifier: 2 },
+    { code: "strength", label: "FORÇA", score: 12, modifier: 1 },
+    { code: "dexterity", label: "DESTREZA", score: 16, modifier: 3 },
+    { code: "constitution", label: "CONSTITUIÇÃO", score: 14, modifier: 2 },
+  ],
+};
+
+function formatModifier(value: number) {
+  return value >= 0 ? `+${value}` : String(value);
+}
+
+const abilityOrder = [
+  "charisma",
+  "intelligence",
+  "wisdom",
+  "strength",
+  "dexterity",
+  "constitution",
 ];
 
 export default function Home() {
+  const [active, setActive] = useState<ActiveCharacter | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(
+    "Conectando a ficha ao cofre da campanha…",
+  );
+
+  const loadCharacter = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await loadActiveCharacter();
+      setActive(result);
+      setMessage(
+        result
+          ? "Ficha sincronizada com a campanha"
+          : "Nenhuma ficha disponível nesta conta",
+      );
+    } catch {
+      setActive(null);
+      setMessage("Prévia visual — entre para carregar sua ficha");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadActiveCharacter()
+      .then((result) => {
+        if (cancelled) return;
+        setActive(result);
+        setMessage(
+          result
+            ? "Ficha sincronizada com a campanha"
+            : "Nenhuma ficha disponível nesta conta",
+        );
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setActive(null);
+        setMessage("Prévia visual — entre para carregar sua ficha");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const character = active?.character ?? demoCharacter;
+  const orderedAbilities = [...character.abilities].sort(
+    (left, right) =>
+      abilityOrder.indexOf(left.code) - abilityOrder.indexOf(right.code),
+  );
+  const campaignName = active?.campaign.name ?? "As Sombras de Esteren";
+  const characterSubtitle = [
+    character.class_name && `${character.class_name} ${character.level}`,
+    character.race_name,
+    character.alignment,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <main className={styles.shell}>
       <aside className={styles.sidebar}>
-        <div className={styles.brand}><span>◇</span>Nexus d20</div>
+        <div className={styles.brand}>
+          <span aria-hidden="true">◇</span>
+          Nexus d20
+        </div>
         <nav aria-label="Navegação principal">
-          {['Ficha','Evolução','Magias','Inventário','Durabilidade','Notas','Campanha','Mestre'].map((item, index) => (
-            <button className={index === 0 ? styles.activeNav : styles.navItem} key={item}>{item}</button>
-          ))}
+          {["Ficha", "Evolução", "Magias", "Inventário", "Notas", "Campanha"].map(
+            (item, index) => (
+              <button
+                className={index === 0 ? styles.activeNav : styles.navItem}
+                key={item}
+                type="button"
+                disabled={index !== 0}
+              >
+                {item}
+              </button>
+            ),
+          )}
         </nav>
-        <div className={styles.campaign}>Campanha ativa<strong>As Sombras de Esteren</strong><small>D&D 5e (2014)</small></div>
+        <div className={styles.campaign}>
+          <span>Campanha ativa</span>
+          <strong>{campaignName}</strong>
+          <small>D&amp;D 5e (2014)</small>
+        </div>
       </aside>
 
       <section className={styles.content}>
         <header className={styles.header}>
-          <div><small>Campanha</small><h1>Painel da sessão</h1></div>
-          <span className={styles.status}>API pronta para regras</span>
+          <div>
+            <small>Ficha inteligente</small>
+            <h1>{campaignName}</h1>
+          </div>
+          <button
+            className={active ? styles.syncedStatus : styles.previewStatus}
+            type="button"
+            onClick={() => void loadCharacter()}
+            disabled={loading}
+          >
+            <span aria-hidden="true">{active ? "●" : "◇"}</span>
+            {loading ? "Sincronizando…" : message}
+          </button>
         </header>
 
-        <div className={styles.gridTop}>
-          <article className={styles.card}>
+        <div className={styles.sheetGrid}>
+          <article className={`${styles.card} ${styles.identityCard}`}>
             <div className={styles.characterTop}>
-              <div className={styles.avatar}>NB</div>
-              <div><h2>Nox Brasalume</h2><p>Monge 2 · Humano variante</p></div>
+              <div className={styles.avatar} aria-hidden="true">
+                {character.name
+                  .split(" ")
+                  .slice(0, 2)
+                  .map((part) => part[0])
+                  .join("")}
+              </div>
+              <div>
+                <span className={styles.eyebrow}>Personagem ativo</span>
+                <h2>{character.name}</h2>
+                <p>{characterSubtitle}</p>
+              </div>
             </div>
-            <div className={styles.stats}>
-              <div><span>PV</span><strong>17/17</strong></div>
-              <div><span>CA</span><strong>16</strong></div>
-              <div><span>Movimento</span><strong>9 m</strong></div>
-              <div><span>Carga</span><strong>33,1 kg</strong></div>
+
+            <dl className={styles.stats}>
+              <div>
+                <dt>PV atuais</dt>
+                <dd>
+                  {character.hit_points_current}
+                  <small> / {character.hit_points_max}</small>
+                </dd>
+              </div>
+              <div>
+                <dt>Classe de armadura</dt>
+                <dd>{character.armor_class}</dd>
+              </div>
+              <div>
+                <dt>Movimento</dt>
+                <dd>
+                  {character.speed_meters} <small>m</small>
+                </dd>
+              </div>
+              <div>
+                <dt>Iniciativa</dt>
+                <dd>{formatModifier(character.initiative)}</dd>
+              </div>
+            </dl>
+
+            <div className={styles.vitalBar}>
+              <span
+                style={{
+                  width: `${Math.min(
+                    100,
+                    (character.hit_points_current / character.hit_points_max) * 100,
+                  )}%`,
+                }}
+              />
             </div>
-            <button className={styles.primary}>Subir de nível</button>
+
+            <div className={styles.identityDetails}>
+              <div>
+                <span>Antecedente</span>
+                <strong>{character.background || "Não informado"}</strong>
+              </div>
+              <div>
+                <span>PV temporários</span>
+                <strong>{character.temporary_hit_points}</strong>
+              </div>
+            </div>
           </article>
 
           <article className={`${styles.card} ${styles.radarCard}`}>
-            <AbilityRadar abilities={abilities} />
+            <AbilityRadar abilities={orderedAbilities} />
           </article>
 
-          <DurabilityCard />
-        </div>
-
-        <div className={styles.gridBottom}>
-          <article className={styles.card}>
-            <div className={styles.cardHeader}><h2>Magias e recursos</h2><span>Ki 2/2</span></div>
-            <div className={styles.slotRow}><span /><span /><span className={styles.emptySlot} /><span className={styles.emptySlot} /></div>
-            <div className={styles.list}>
-              <div><strong>Passo do Vento</strong><small>1 Ki</small></div>
-              <div><strong>Defesa Paciente</strong><small>1 Ki</small></div>
-              <div><strong>Rajada de Golpes</strong><small>1 Ki</small></div>
+          <article className={`${styles.card} ${styles.summaryCard}`}>
+            <div className={styles.cardHeader}>
+              <div>
+                <span className={styles.eyebrow}>Leitura rápida</span>
+                <h2>Resumo da ficha</h2>
+              </div>
+              <span className={styles.levelSeal}>NV {character.level}</span>
             </div>
-          </article>
-
-          <MasterGroupCard />
-
-          <article className={styles.card}>
-            <div className={styles.cardHeader}><h2>Teia do mestre</h2><span>12 conexões</span></div>
-            <div className={styles.graph} aria-label="Prévia da teia de conhecimento">
-              <span className={styles.nodeA}>NPCs</span><span className={styles.nodeB}>EVENTOS</span><span className={styles.nodeC}>LOCAIS</span><span className={styles.nodeD}>PISTAS</span>
+            <div className={styles.summaryList}>
+              {orderedAbilities.map((ability) => (
+                <div key={ability.code}>
+                  <span>{ability.label}</span>
+                  <strong>{ability.score}</strong>
+                  <small>{formatModifier(ability.modifier)}</small>
+                </div>
+              ))}
             </div>
+            <p className={styles.auditNote}>
+              Alterações mecânicas ficam registradas no histórico da campanha.
+            </p>
           </article>
         </div>
       </section>
+
+      <nav className={styles.mobileNav} aria-label="Navegação móvel">
+        {["Ficha", "Evolução", "Magias", "Inventário", "Campanha"].map(
+          (item, index) => (
+            <button
+              type="button"
+              key={item}
+              className={index === 0 ? styles.mobileActive : undefined}
+              disabled={index !== 0}
+            >
+              <span aria-hidden="true">
+                {["◇", "↟", "✦", "□", "⌂"][index]}
+              </span>
+              {item}
+            </button>
+          ),
+        )}
+      </nav>
     </main>
   );
 }
