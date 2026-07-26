@@ -39,7 +39,7 @@ Não membros recebem `campaign_not_found` com HTTP 404, inclusive quando o UUID 
 - `GET /campaigns/{campaign_id}/audit` — lista eventos; exige mestre da campanha.
 - `POST /campaign-audits/{audit_id}/reverse` — reverte evento elegível com motivo.
 
-Reversões são permitidas somente quando o evento foi marcado como reversível e o estado atual ainda corresponde ao estado posterior registrado. A reversão preserva o evento original, registra responsável, horário e motivo, e cria um novo evento com `reversal_of_id`. Não membros recebem 404 sem confirmação da existência do evento.
+Reversões são permitidas somente quando o evento foi marcado como reversível e o estado atual ainda corresponde ao estado posterior registrado. Arquivamentos de campanha e edições de ficha feitas pelo mestre possuem aplicação inversa. A reversão preserva o evento original, registra responsável, horário e motivo, e cria um novo evento com `reversal_of_id`. Não membros recebem 404 sem confirmação da existência do evento.
 
 ## Personagens
 
@@ -48,7 +48,7 @@ Reversões são permitidas somente quando o evento foi marcado como reversível 
 - `GET /characters/{character_id}` — retorna ficha somente ao mestre da campanha ou ao jogador responsável.
 - `PATCH /characters/{character_id}` — altera identidade, atributos, PV, CA, iniciativa e deslocamento.
 
-Modificadores de atributo são derivados pela API e nunca persistidos ou recalculados como fonte de verdade pelo cliente. Acesso direto sem visibilidade retorna `character_not_found` com HTTP 404. Criação e atualização registram auditoria transacional; o campo opcional `reason` documenta a motivação da edição.
+Modificadores de atributo são derivados pela API e nunca persistidos ou recalculados como fonte de verdade pelo cliente. Acesso direto sem visibilidade retorna `character_not_found` com HTTP 404. Criação e atualização registram auditoria transacional; o campo opcional `reason` documenta a motivação da edição. Atualizações executadas pelo mestre são marcadas como reversíveis e exigem que nenhuma mudança posterior tenha alterado a ficha.
 
 ## Regras puras implementadas na fundação
 

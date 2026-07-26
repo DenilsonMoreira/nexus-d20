@@ -112,7 +112,7 @@ Toda rota de campanha resolve o usuário autenticado e sua participação no ban
 
 ## D-026 — Auditoria transacional e reversão segura
 
-Eventos de auditoria são gravados na mesma transação da alteração de domínio e registram entidade, ação, responsável, antes, depois e motivo quando aplicável. Apenas eventos explicitamente marcados como reversíveis podem ser desfeitos. A reversão exige mestre, motivo, compatibilidade com o estado atual e cria um novo evento ligado ao original; o histórico nunca é apagado. Inicialmente, somente o arquivamento de campanha possui reversão automática comprovadamente segura.
+Eventos de auditoria são gravados na mesma transação da alteração de domínio e registram entidade, ação, responsável, antes, depois e motivo quando aplicável. Apenas eventos explicitamente marcados como reversíveis podem ser desfeitos. A reversão exige mestre, motivo, compatibilidade com o estado atual e cria um novo evento ligado ao original; o histórico nunca é apagado. Arquivamento de campanha e edições de ficha feitas pelo mestre possuem reversão automática com verificação integral do estado posterior.
 
 ## D-027 — Recuperação de acesso
 
@@ -120,4 +120,4 @@ Recuperação de senha usa token opaco de uso único, com validade de 30 minutos
 
 ## D-028 — Propriedade e visibilidade da ficha
 
-Cada personagem pertence a uma campanha e possui um usuário responsável que deve ser mestre ou jogador participante. O mestre enxerga e edita todas as fichas da campanha; o jogador enxerga e edita somente as próprias; observadores e outros jogadores não recebem a ficha no payload. Tentativas de acesso direto sem permissão retornam 404. Criação e alterações mecânicas geram auditoria transacional com antes e depois; modificadores de atributo são calculados pela API segundo a regra de 2014.
+Cada personagem pertence a uma campanha e possui um usuário responsável que deve ser mestre ou jogador participante. O mestre enxerga e edita todas as fichas da campanha; o jogador enxerga e edita somente as próprias; observadores e outros jogadores não recebem a ficha no payload. Tentativas de acesso direto sem permissão retornam 404. Criação e alterações mecânicas geram auditoria transacional com antes e depois; edições feitas pelo mestre são reversíveis enquanto a ficha ainda corresponder ao estado posterior auditado. Modificadores de atributo são calculados pela API segundo a regra de 2014.

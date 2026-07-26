@@ -1,0 +1,276 @@
+.backdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(4 4 4 / 82%);
+  backdrop-filter: blur(9px);
+}
+
+.dialog {
+  width: min(900px, 100%);
+  max-height: min(900px, calc(100vh - 40px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid #6b5031;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 85% 0, rgb(110 72 39 / 18%), transparent 22rem),
+    #151412;
+  box-shadow: 0 35px 100px #000c;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 21px 24px;
+  border-bottom: 1px solid #3c3024;
+  background: #11100f;
+}
+
+.header span {
+  color: #a68d67;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.header h2 {
+  margin: 4px 0 0;
+  color: #efd6a7;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 500;
+}
+
+.close {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #493a2b;
+  border-radius: 50%;
+  color: #cdbb9f;
+  background: #1c1916;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.dialog form {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.scrollArea {
+  min-height: 0;
+  display: grid;
+  gap: 20px;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.scrollArea fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #3d3228;
+  border-radius: 8px;
+}
+
+.scrollArea legend {
+  padding: 0 8px;
+  color: #d6b77d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+}
+
+.identityGrid,
+.numberGrid,
+.abilityGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.identityGrid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.numberGrid,
+.abilityGrid {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.wide {
+  grid-column: span 2;
+}
+
+.scrollArea label {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  color: #a99d8e;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.scrollArea input,
+.scrollArea textarea {
+  width: 100%;
+  border: 1px solid #463829;
+  border-radius: 6px;
+  outline: none;
+  color: #f1e4cf;
+  background: #0f0f0e;
+  padding: 10px 11px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.scrollArea input:focus,
+.scrollArea textarea:focus {
+  border-color: #bf9251;
+  box-shadow: 0 0 0 2px rgb(191 146 81 / 18%);
+}
+
+.inputWithSuffix {
+  position: relative;
+}
+
+.inputWithSuffix small {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  translate: 0 -50%;
+  color: #8e8171;
+  text-transform: none;
+}
+
+.inputWithSuffix input {
+  padding-right: 30px;
+}
+
+.hint {
+  margin: 0 0 13px;
+  color: #918678;
+  font-size: 12px;
+}
+
+.reason span {
+  color: #b48950;
+  font-size: 9px;
+}
+
+.error {
+  margin: 0;
+  padding: 11px 13px;
+  border: 1px solid #713e3e;
+  border-radius: 6px;
+  color: #efadad;
+  background: #2c1717;
+  font-size: 12px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 24px;
+  border-top: 1px solid #3c3024;
+  background: #11100f;
+}
+
+.footer p {
+  margin: 0;
+  color: #8f8376;
+  font-size: 11px;
+}
+
+.footer div {
+  display: flex;
+  gap: 9px;
+}
+
+.footer button {
+  border: 1px solid #493b2e;
+  border-radius: 6px;
+  padding: 10px 16px;
+  color: #c7b9a4;
+  background: #1a1816;
+  cursor: pointer;
+}
+
+.footer .save {
+  border-color: #a17842;
+  color: #181108;
+  background: linear-gradient(#c79b5b, #966a34);
+  font-weight: 750;
+}
+
+.footer button:disabled,
+.close:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+@media (max-width: 760px) {
+  .backdrop {
+    place-items: stretch;
+    padding: 0;
+  }
+
+  .dialog {
+    max-height: 100dvh;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .header {
+    padding: 16px;
+  }
+
+  .scrollArea {
+    padding: 16px;
+  }
+
+  .identityGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .numberGrid,
+  .abilityGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .footer {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+  }
+
+  .footer div {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .identityGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide {
+    grid-column: auto;
+  }
+
+  .numberGrid,
+  .abilityGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

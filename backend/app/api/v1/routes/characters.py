@@ -155,6 +155,7 @@ async def update_character(
             before_data=before,
             after_data=after,
             reason=payload.reason.strip() if payload.reason else None,
+            is_reversible=role == "master",
         )
     await db.commit()
     await db.refresh(character)

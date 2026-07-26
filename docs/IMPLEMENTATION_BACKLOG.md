@@ -31,7 +31,7 @@ Cada item deve resultar em PR independente ou em um conjunto pequeno e coerente.
 4. **Ficha básica** — em andamento
    - [x] personagem, atributos, modificadores, PV, CA e movimento;
    - [x] gráfico responsivo conectado à API;
-   - [ ] edição completa da ficha na interface;
+   - [x] edição completa da ficha na interface;
    - [ ] proficiências e recursos.
 
 5. **Profissões e visibilidade**

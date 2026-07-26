@@ -157,6 +157,48 @@ async def test_character_sheet_is_persisted_audited_and_tenant_safe() -> None:
         assert updated.status_code == 200
         assert updated.json()["hit_points_current"] == 12
 
+        audit_list = await master.get(f"/api/v1/campaigns/{campaign_id}/audit")
+        master_update_audit = next(
+            item
+            for item in audit_list.json()["items"]
+            if item["action"] == "character.updated"
+            and item["after_data"]["hit_points_current"] == 12
+        )
+        assert master_update_audit["is_reversible"] is True
+        reversed_update = await master.post(
+            f"/api/v1/campaign-audits/{master_update_audit['id']}/reverse",
+            json={"reason": "Correção do dano lançado por engano"},
+        )
+        assert reversed_update.status_code == 200
+        restored = await player.get(f"/api/v1/characters/{character_id}")
+        assert restored.json()["hit_points_current"] == 17
+
+        second_master_update = await master.patch(
+            f"/api/v1/characters/{character_id}",
+            json={
+                "hit_points_current": 12,
+                "reason": "Segundo ajuste do mestre",
+            },
+        )
+        assert second_master_update.status_code == 200
+        second_audit_list = await master.get(f"/api/v1/campaigns/{campaign_id}/audit")
+        second_master_audit = next(
+            item
+            for item in second_audit_list.json()["items"]
+            if item["reason"] == "Segundo ajuste do mestre"
+        )
+        player_update = await player.patch(
+            f"/api/v1/characters/{character_id}",
+            json={"hit_points_current": 11},
+        )
+        assert player_update.status_code == 200
+        stale_reversal = await master.post(
+            f"/api/v1/campaign-audits/{second_master_audit['id']}/reverse",
+            json={"reason": "Tentativa após mudança do jogador"},
+        )
+        assert stale_reversal.status_code == 409
+        assert stale_reversal.json()["error"]["code"] == "audit_state_changed"
+
         invalid_hp = await player.patch(
             f"/api/v1/characters/{character_id}",
             json={"hit_points_current": 18},
@@ -177,14 +219,24 @@ async def test_character_sheet_is_persisted_audited_and_tenant_safe() -> None:
                     )
                 ).all()
             )
-        assert [audit.action for audit in audits] == [
-            "character.created",
-            "character.updated",
-            "character.updated",
-        ]
-        assert audits[-1].reason == "Dano recebido durante a sessão"
-        assert audits[-1].before_data["hit_points_current"] == 17
-        assert audits[-1].after_data["hit_points_current"] == 12
+        actions = [audit.action for audit in audits]
+        assert actions.count("character.created") == 1
+        assert actions.count("character.updated") == 4
+        assert actions.count("character.updated.reversed") == 1
+        master_audit = next(
+            audit for audit in audits if audit.reason == "Dano recebido durante a sessão"
+        )
+        assert master_audit.reason == "Dano recebido durante a sessão"
+        assert master_audit.before_data["hit_points_current"] == 17
+        assert master_audit.after_data["hit_points_current"] == 12
+        assert master_audit.reversed_at is not None
+        final_player_audit = next(
+            audit
+            for audit in audits
+            if audit.action == "character.updated"
+            and audit.after_data["hit_points_current"] == 11
+        )
+        assert final_player_audit.is_reversible is False
     finally:
         for client in clients:
             await client.aclose()

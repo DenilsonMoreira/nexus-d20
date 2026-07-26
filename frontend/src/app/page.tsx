@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AbilityRadar } from "@/components/AbilityRadar";
+import { CharacterEditor } from "@/components/CharacterEditor";
 import {
   type ActiveCharacter,
   type Character,
@@ -52,6 +53,7 @@ const abilityOrder = [
 export default function Home() {
   const [active, setActive] = useState<ActiveCharacter | null>(null);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState(
     "Conectando a ficha ao cofre da campanha…",
   );
@@ -72,6 +74,15 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  const closeEditor = useCallback(() => setEditing(false), []);
+  const saveEditor = useCallback((updatedCharacter: Character) => {
+    setActive((current) =>
+      current ? { ...current, character: updatedCharacter } : current,
+    );
+    setMessage("Ficha salva e auditada");
+    setEditing(false);
   }, []);
 
   useEffect(() => {
@@ -147,15 +158,25 @@ export default function Home() {
             <small>Ficha inteligente</small>
             <h1>{campaignName}</h1>
           </div>
-          <button
-            className={active ? styles.syncedStatus : styles.previewStatus}
-            type="button"
-            onClick={() => void loadCharacter()}
-            disabled={loading}
-          >
-            <span aria-hidden="true">{active ? "●" : "◇"}</span>
-            {loading ? "Sincronizando…" : message}
-          </button>
+          <div className={styles.headerActions}>
+            <button
+              className={active ? styles.syncedStatus : styles.previewStatus}
+              type="button"
+              onClick={() => void loadCharacter()}
+              disabled={loading}
+            >
+              <span aria-hidden="true">{active ? "●" : "◇"}</span>
+              {loading ? "Sincronizando…" : message}
+            </button>
+            <button
+              className={styles.editButton}
+              type="button"
+              disabled={!active || loading}
+              onClick={() => setEditing(true)}
+            >
+              Editar ficha
+            </button>
+          </div>
         </header>
 
         <div className={styles.sheetGrid}>
@@ -267,6 +288,15 @@ export default function Home() {
           ),
         )}
       </nav>
+
+      {editing && active && (
+        <CharacterEditor
+          character={active.character}
+          role={active.campaign.role}
+          onClose={closeEditor}
+          onSaved={saveEditor}
+        />
+      )}
     </main>
   );
 }

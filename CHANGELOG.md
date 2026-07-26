@@ -29,3 +29,5 @@
 - Fase 2 iniciada com ficha básica persistida, validada e auditada.
 - Endpoints multi-tenant para criação, listagem, leitura e atualização de personagens.
 - Painel responsivo conectado à API, com composição desktop e navegação móvel gótica.
+- Editor responsivo para identidade, combate, movimento e os seis atributos da ficha.
+- Reversão segura de edições de ficha feitas pelo mestre, com detecção de mudanças posteriores.

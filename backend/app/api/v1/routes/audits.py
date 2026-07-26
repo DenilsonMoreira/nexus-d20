@@ -5,9 +5,10 @@ from sqlalchemy import select
 
 from app.api.dependencies import CurrentUser, DatabaseSession
 from app.core.errors import AppError
-from app.models import AuditLog, Campaign, CampaignMember
+from app.models import AuditLog, Campaign, CampaignMember, Character
 from app.schemas.audit import AuditResponse, AuditReverseRequest
 from app.services.audit import mark_reversed
+from app.services.characters import apply_character_snapshot, character_snapshot
 
 router = APIRouter()
 
@@ -36,15 +37,27 @@ async def reverse_audit(
         raise AppError(409, "audit_already_reversed", "Esta alteração já foi revertida.")
     if not audit.is_reversible:
         raise AppError(409, "audit_not_reversible", "Esta alteração não pode ser revertida.")
-    if audit.action != "campaign.archived" or audit.entity_id != audit.campaign_id:
+    if audit.action == "campaign.archived" and audit.entity_id == audit.campaign_id:
+        campaign = await db.get(Campaign, audit.campaign_id)
+        if campaign is None:
+            raise AppError(409, "audit_state_changed", "O estado atual impede a reversão.")
+        expected_state = (audit.after_data or {}).get("is_archived")
+        if campaign.is_archived != expected_state:
+            raise AppError(409, "audit_state_changed", "O estado atual impede a reversão.")
+        campaign.is_archived = bool((audit.before_data or {}).get("is_archived", False))
+    elif audit.action == "character.updated" and audit.entity_id is not None:
+        character = await db.get(Character, audit.entity_id)
+        if (
+            character is None
+            or character.campaign_id != audit.campaign_id
+            or audit.before_data is None
+            or audit.after_data is None
+            or character_snapshot(character) != audit.after_data
+        ):
+            raise AppError(409, "audit_state_changed", "O estado atual impede a reversão.")
+        apply_character_snapshot(character, audit.before_data)
+    else:
         raise AppError(409, "audit_not_reversible", "Esta alteração não pode ser revertida.")
-    campaign = await db.get(Campaign, audit.campaign_id)
-    if campaign is None:
-        raise AppError(409, "audit_state_changed", "O estado atual impede a reversão.")
-    expected_state = (audit.after_data or {}).get("is_archived")
-    if campaign.is_archived != expected_state:
-        raise AppError(409, "audit_state_changed", "O estado atual impede a reversão.")
-    campaign.is_archived = bool((audit.before_data or {}).get("is_archived", False))
     reversal = mark_reversed(
         db,
         original=audit,

@@ -37,6 +37,33 @@ def character_snapshot(character: Character) -> dict[str, object]:
     }
 
 
+def apply_character_snapshot(
+    character: Character,
+    snapshot: dict[str, object],
+) -> None:
+    for field in (
+        "name",
+        "race_name",
+        "class_name",
+        "subclass_name",
+        "level",
+        "background",
+        "alignment",
+        "hit_points_current",
+        "hit_points_max",
+        "temporary_hit_points",
+        "armor_class",
+        "initiative",
+        "speed_meters",
+    ):
+        setattr(character, field, snapshot[field])
+    abilities = snapshot["abilities"]
+    if not isinstance(abilities, dict):
+        raise AppError(409, "audit_state_invalid", "O histórico da ficha está inválido.")
+    for field, _ in ABILITY_FIELDS:
+        setattr(character, field, abilities[field])
+
+
 def character_response(character: Character) -> CharacterResponse:
     return CharacterResponse(
         id=character.id,

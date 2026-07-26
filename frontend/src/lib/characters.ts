@@ -44,6 +44,24 @@ export type ActiveCharacter = {
   character: Character;
 };
 
+export type CharacterUpdate = {
+  name: string;
+  race_name: string;
+  class_name: string;
+  subclass_name: string;
+  level: number;
+  background: string;
+  alignment: string;
+  hit_points_current: number;
+  hit_points_max: number;
+  temporary_hit_points: number;
+  armor_class: number;
+  initiative: number;
+  speed_meters: number;
+  abilities: Record<string, number>;
+  reason?: string;
+};
+
 export async function loadActiveCharacter(): Promise<ActiveCharacter | null> {
   const campaigns = await apiFetch<ListResponse<Campaign>>("/campaigns");
   for (const campaign of campaigns.items) {
@@ -55,4 +73,14 @@ export async function loadActiveCharacter(): Promise<ActiveCharacter | null> {
     }
   }
   return null;
+}
+
+export async function updateCharacter(
+  characterId: string,
+  payload: CharacterUpdate,
+): Promise<Character> {
+  return apiFetch<Character>(`/characters/${characterId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }
