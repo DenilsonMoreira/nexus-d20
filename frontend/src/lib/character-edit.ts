@@ -1,4 +1,9 @@
-import type { Character, CharacterUpdate } from "./characters";
+import type {
+  Character,
+  CharacterProficiency,
+  CharacterResource,
+  CharacterUpdate,
+} from "./characters";
 
 export const editableAbilities = [
   { code: "strength", label: "Força" },
@@ -26,6 +31,8 @@ export function characterToEditValues(character: Character): CharacterEditValues
     armor_class: String(character.armor_class),
     initiative: String(character.initiative),
     speed_meters: String(character.speed_meters),
+    proficiencies_json: JSON.stringify(character.proficiencies),
+    resources_json: JSON.stringify(character.resources),
     reason: "",
   };
   for (const ability of character.abilities) {
@@ -46,6 +53,86 @@ function integerInRange(
     throw new Error(`${label} deve estar entre ${minimum} e ${maximum}.`);
   }
   return value;
+}
+
+function parseCollection(value: string | undefined, label: string): unknown[] {
+  try {
+    const parsed: unknown = JSON.parse(value ?? "[]");
+    if (!Array.isArray(parsed)) throw new Error();
+    return parsed;
+  } catch {
+    throw new Error(`Não foi possível validar ${label}.`);
+  }
+}
+
+function parseProficiencies(value: string | undefined): CharacterProficiency[] {
+  const allowedCategories = new Set([
+    "saving_throw",
+    "skill",
+    "language",
+    "tool",
+    "weapon",
+    "armor",
+    "other",
+  ]);
+  const proficiencies = parseCollection(value, "as proficiências").map((item) => {
+    if (!item || typeof item !== "object") {
+      throw new Error("Revise as proficiências cadastradas.");
+    }
+    const data = item as Record<string, unknown>;
+    const name = typeof data.name === "string" ? data.name.trim() : "";
+    const category =
+      typeof data.category === "string" ? data.category : "";
+    if (!name || !allowedCategories.has(category)) {
+      throw new Error("Revise as proficiências cadastradas.");
+    }
+    return { category, name } as CharacterProficiency;
+  });
+  const keys = proficiencies.map(
+    (item) => `${item.category}:${item.name.toLocaleLowerCase("pt-BR")}`,
+  );
+  if (keys.length !== new Set(keys).size) {
+    throw new Error("Não repita a mesma proficiência.");
+  }
+  return proficiencies;
+}
+
+function parseResources(value: string | undefined): CharacterResource[] {
+  const allowedRecoveries = new Set(["short_rest", "long_rest", "manual"]);
+  const resources = parseCollection(value, "os recursos").map((item) => {
+    if (!item || typeof item !== "object") {
+      throw new Error("Revise os recursos cadastrados.");
+    }
+    const data = item as Record<string, unknown>;
+    const name = typeof data.name === "string" ? data.name.trim() : "";
+    const currentValue = Number(data.current_value);
+    const maximumValue = Number(data.maximum_value);
+    const recovery = typeof data.recovery === "string" ? data.recovery : "";
+    if (
+      !name ||
+      !Number.isInteger(currentValue) ||
+      currentValue < 0 ||
+      currentValue > 9999 ||
+      !Number.isInteger(maximumValue) ||
+      maximumValue < 1 ||
+      maximumValue > 9999 ||
+      currentValue > maximumValue ||
+      !allowedRecoveries.has(recovery)
+    ) {
+      throw new Error("Revise os valores atuais e máximos dos recursos.");
+    }
+    return {
+      name,
+      current_value: currentValue,
+      maximum_value: maximumValue,
+      recovery,
+    } as CharacterResource;
+  });
+  const names = resources.map((item) => item.name.toLocaleLowerCase("pt-BR"));
+  if (names.length !== new Set(names).size) {
+    throw new Error("Não repita o mesmo recurso.");
+  }
+  return resources;
 }
 
 export function buildCharacterUpdate(
@@ -117,6 +204,8 @@ export function buildCharacterUpdate(
         integerInRange(values, code, label, 1, 30),
       ]),
     ),
+    proficiencies: parseProficiencies(values.proficiencies_json),
+    resources: parseResources(values.resources_json),
     ...(values.reason?.trim() ? { reason: values.reason.trim() } : {}),
   };
 }

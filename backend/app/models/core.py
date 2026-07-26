@@ -14,7 +14,7 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 
@@ -115,6 +115,62 @@ class Character(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     intelligence: Mapped[int] = mapped_column(Integer, default=10)
     wisdom: Mapped[int] = mapped_column(Integer, default=10)
     charisma: Mapped[int] = mapped_column(Integer, default=10)
+    proficiencies: Mapped[list["CharacterProficiency"]] = relationship(
+        back_populates="character",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="CharacterProficiency.category, CharacterProficiency.name",
+    )
+    resources: Mapped[list["CharacterResource"]] = relationship(
+        back_populates="character",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="CharacterResource.name",
+    )
+
+
+class CharacterProficiency(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "character_proficiencies"
+    __table_args__ = (
+        UniqueConstraint("character_id", "category", "name"),
+        CheckConstraint(
+            "category IN ('saving_throw', 'skill', 'language', 'tool', "
+            "'weapon', 'armor', 'other')",
+            name="category_allowed",
+        ),
+    )
+
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
+    )
+    category: Mapped[str] = mapped_column(String(30))
+    name: Mapped[str] = mapped_column(String(160))
+    character: Mapped[Character] = relationship(back_populates="proficiencies")
+
+
+class CharacterResource(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "character_resources"
+    __table_args__ = (
+        UniqueConstraint("character_id", "name"),
+        CheckConstraint(
+            "current_value >= 0 AND current_value <= maximum_value",
+            name="current_value_range",
+        ),
+        CheckConstraint("maximum_value >= 1", name="maximum_value_positive"),
+        CheckConstraint(
+            "recovery IN ('short_rest', 'long_rest', 'manual')",
+            name="recovery_allowed",
+        ),
+    )
+
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
+    )
+    name: Mapped[str] = mapped_column(String(160))
+    current_value: Mapped[int] = mapped_column(Integer)
+    maximum_value: Mapped[int] = mapped_column(Integer)
+    recovery: Mapped[str] = mapped_column(String(30))
+    character: Mapped[Character] = relationship(back_populates="resources")
 
 
 class Invite(UUIDPrimaryKeyMixin, TimestampMixin, Base):

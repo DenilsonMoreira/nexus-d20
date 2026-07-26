@@ -8,7 +8,11 @@ from app.core.errors import AppError
 from app.models import AuditLog, Campaign, CampaignMember, Character
 from app.schemas.audit import AuditResponse, AuditReverseRequest
 from app.services.audit import mark_reversed
-from app.services.characters import apply_character_snapshot, character_snapshot
+from app.services.characters import (
+    apply_character_snapshot,
+    character_snapshot,
+    normalize_character_snapshot,
+)
 
 router = APIRouter()
 
@@ -52,10 +56,11 @@ async def reverse_audit(
             or character.campaign_id != audit.campaign_id
             or audit.before_data is None
             or audit.after_data is None
-            or character_snapshot(character) != audit.after_data
+            or character_snapshot(character)
+            != normalize_character_snapshot(audit.after_data)
         ):
             raise AppError(409, "audit_state_changed", "O estado atual impede a reversão.")
-        apply_character_snapshot(character, audit.before_data)
+        await apply_character_snapshot(db, character, audit.before_data)
     else:
         raise AppError(409, "audit_not_reversible", "Esta alteração não pode ser revertida.")
     reversal = mark_reversed(

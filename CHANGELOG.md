@@ -31,3 +31,6 @@
 - Painel responsivo conectado à API, com composição desktop e navegação móvel gótica.
 - Editor responsivo para identidade, combate, movimento e os seis atributos da ficha.
 - Reversão segura de edições de ficha feitas pelo mestre, com detecção de mudanças posteriores.
+- Proficiências categorizadas e recursos de classe persistidos como coleções da ficha.
+- Editor e painel responsivos para proficiências, valores atuais, máximos e gatilhos de recuperação.
+- Fase 2 concluída com ficha persistida, editável, auditada e protegida por campanha.

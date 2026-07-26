@@ -8,7 +8,11 @@ import {
 } from "@/lib/character-edit";
 import {
   type Character,
+  type CharacterProficiency,
+  type CharacterResource,
   type CharacterUpdate,
+  type ProficiencyCategory,
+  type ResourceRecovery,
   updateCharacter,
 } from "@/lib/characters";
 import styles from "./CharacterEditor.module.css";
@@ -37,6 +41,25 @@ const combatFields: NumberField[] = [
   { name: "speed_meters", label: "Deslocamento", min: 0, max: 999, suffix: "m" },
 ];
 
+const proficiencyCategories: {
+  value: ProficiencyCategory;
+  label: string;
+}[] = [
+  { value: "saving_throw", label: "Salvaguarda" },
+  { value: "skill", label: "Perícia" },
+  { value: "language", label: "Idioma" },
+  { value: "tool", label: "Ferramenta" },
+  { value: "weapon", label: "Arma" },
+  { value: "armor", label: "Armadura" },
+  { value: "other", label: "Outra" },
+];
+
+const recoveryOptions: { value: ResourceRecovery; label: string }[] = [
+  { value: "short_rest", label: "Descanso curto" },
+  { value: "long_rest", label: "Descanso longo" },
+  { value: "manual", label: "Manual" },
+];
+
 export function CharacterEditor({
   character,
   role,
@@ -45,6 +68,12 @@ export function CharacterEditor({
 }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [proficiencies, setProficiencies] = useState<CharacterProficiency[]>(
+    character.proficiencies,
+  );
+  const [resources, setResources] = useState<CharacterResource[]>(
+    character.resources,
+  );
   const nameInput = useRef<HTMLInputElement>(null);
   const initialValues = characterToEditValues(character);
 
@@ -216,6 +245,237 @@ export function CharacterEditor({
                       required
                     />
                   </label>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Proficiências</legend>
+              <div className={styles.collectionHeader}>
+                <p className={styles.hint}>
+                  Registre apenas as proficiências escolhidas para a ficha.
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setProficiencies((current) => [
+                      ...current,
+                      { category: "skill", name: "" },
+                    ])
+                  }
+                >
+                  Adicionar
+                </button>
+              </div>
+              <input
+                type="hidden"
+                name="proficiencies_json"
+                value={JSON.stringify(proficiencies)}
+                readOnly
+              />
+              <div className={styles.collectionList}>
+                {proficiencies.length === 0 && (
+                  <p className={styles.emptyCollection}>
+                    Nenhuma proficiência cadastrada.
+                  </p>
+                )}
+                {proficiencies.map((proficiency, index) => (
+                  <div className={styles.proficiencyRow} key={index}>
+                    <label>
+                      Categoria
+                      <select
+                        value={proficiency.category}
+                        onChange={(event) =>
+                          setProficiencies((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? {
+                                    ...item,
+                                    category: event.target
+                                      .value as ProficiencyCategory,
+                                  }
+                                : item,
+                            ),
+                          )
+                        }
+                      >
+                        {proficiencyCategories.map((category) => (
+                          <option key={category.value} value={category.value}>
+                            {category.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      Nome
+                      <input
+                        value={proficiency.name}
+                        maxLength={160}
+                        required
+                        onChange={(event) =>
+                          setProficiencies((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, name: event.target.value }
+                                : item,
+                            ),
+                          )
+                        }
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      className={styles.remove}
+                      aria-label={`Remover proficiência ${proficiency.name || index + 1}`}
+                      onClick={() =>
+                        setProficiencies((current) =>
+                          current.filter((_, itemIndex) => itemIndex !== index),
+                        )
+                      }
+                    >
+                      Remover
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Recursos</legend>
+              <div className={styles.collectionHeader}>
+                <p className={styles.hint}>
+                  A recuperação é informativa até a integração com descansos.
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setResources((current) => [
+                      ...current,
+                      {
+                        name: "",
+                        current_value: 1,
+                        maximum_value: 1,
+                        recovery: "manual",
+                      },
+                    ])
+                  }
+                >
+                  Adicionar
+                </button>
+              </div>
+              <input
+                type="hidden"
+                name="resources_json"
+                value={JSON.stringify(resources)}
+                readOnly
+              />
+              <div className={styles.collectionList}>
+                {resources.length === 0 && (
+                  <p className={styles.emptyCollection}>
+                    Nenhum recurso cadastrado.
+                  </p>
+                )}
+                {resources.map((resource, index) => (
+                  <div className={styles.resourceRow} key={index}>
+                    <label>
+                      Nome
+                      <input
+                        value={resource.name}
+                        maxLength={160}
+                        required
+                        onChange={(event) =>
+                          setResources((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? { ...item, name: event.target.value }
+                                : item,
+                            ),
+                          )
+                        }
+                      />
+                    </label>
+                    <label>
+                      Atual
+                      <input
+                        type="number"
+                        value={resource.current_value}
+                        min={0}
+                        max={9999}
+                        required
+                        onChange={(event) =>
+                          setResources((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? {
+                                    ...item,
+                                    current_value: Number(event.target.value),
+                                  }
+                                : item,
+                            ),
+                          )
+                        }
+                      />
+                    </label>
+                    <label>
+                      Máximo
+                      <input
+                        type="number"
+                        value={resource.maximum_value}
+                        min={1}
+                        max={9999}
+                        required
+                        onChange={(event) =>
+                          setResources((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? {
+                                    ...item,
+                                    maximum_value: Number(event.target.value),
+                                  }
+                                : item,
+                            ),
+                          )
+                        }
+                      />
+                    </label>
+                    <label>
+                      Recuperação
+                      <select
+                        value={resource.recovery}
+                        onChange={(event) =>
+                          setResources((current) =>
+                            current.map((item, itemIndex) =>
+                              itemIndex === index
+                                ? {
+                                    ...item,
+                                    recovery: event.target
+                                      .value as ResourceRecovery,
+                                  }
+                                : item,
+                            ),
+                          )
+                        }
+                      >
+                        {recoveryOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      className={styles.remove}
+                      aria-label={`Remover recurso ${resource.name || index + 1}`}
+                      onClick={() =>
+                        setResources((current) =>
+                          current.filter((_, itemIndex) => itemIndex !== index),
+                        )
+                      }
+                    >
+                      Remover
+                    </button>
+                  </div>
                 ))}
               </div>
             </fieldset>

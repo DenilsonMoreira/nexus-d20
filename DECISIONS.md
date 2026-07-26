@@ -121,3 +121,7 @@ Recuperação de senha usa token opaco de uso único, com validade de 30 minutos
 ## D-028 — Propriedade e visibilidade da ficha
 
 Cada personagem pertence a uma campanha e possui um usuário responsável que deve ser mestre ou jogador participante. O mestre enxerga e edita todas as fichas da campanha; o jogador enxerga e edita somente as próprias; observadores e outros jogadores não recebem a ficha no payload. Tentativas de acesso direto sem permissão retornam 404. Criação e alterações mecânicas geram auditoria transacional com antes e depois; edições feitas pelo mestre são reversíveis enquanto a ficha ainda corresponder ao estado posterior auditado. Modificadores de atributo são calculados pela API segundo a regra de 2014.
+
+## D-029 — Proficiências e recursos declarativos
+
+Proficiências da ficha são registros declarativos categorizados como salvaguarda, perícia, idioma, ferramenta, arma, armadura ou outra; esta fase não infere bônus nem concede proficiências automaticamente. Recursos possuem nome, valor atual, máximo e gatilho informativo de recuperação por descanso curto, descanso longo ou ação manual. Quantidades e recuperação efetiva continuam sob responsabilidade do motor de progressão e descanso nas fases correspondentes. As coleções pertencem ao personagem, seguem as mesmas permissões e integram os snapshots reversíveis de auditoria.

@@ -48,7 +48,12 @@ Reversões são permitidas somente quando o evento foi marcado como reversível 
 - `GET /characters/{character_id}` — retorna ficha somente ao mestre da campanha ou ao jogador responsável.
 - `PATCH /characters/{character_id}` — altera identidade, atributos, PV, CA, iniciativa e deslocamento.
 
-Modificadores de atributo são derivados pela API e nunca persistidos ou recalculados como fonte de verdade pelo cliente. Acesso direto sem visibilidade retorna `character_not_found` com HTTP 404. Criação e atualização registram auditoria transacional; o campo opcional `reason` documenta a motivação da edição. Atualizações executadas pelo mestre são marcadas como reversíveis e exigem que nenhuma mudança posterior tenha alterado a ficha.
+Criação e atualização também aceitam:
+
+- `proficiencies` — lista de categoria e nome, sem cálculo automático de bônus;
+- `resources` — lista de nome, valor atual, máximo e recuperação `short_rest`, `long_rest` ou `manual`.
+
+As listas enviadas em um `PATCH` substituem integralmente a respectiva coleção e não podem conter duplicatas. Modificadores de atributo são derivados pela API e nunca persistidos ou recalculados como fonte de verdade pelo cliente. Acesso direto sem visibilidade retorna `character_not_found` com HTTP 404. Criação e atualização registram auditoria transacional; o campo opcional `reason` documenta a motivação da edição. Atualizações executadas pelo mestre são marcadas como reversíveis e exigem que nenhuma mudança posterior tenha alterado a ficha.
 
 ## Regras puras implementadas na fundação
 

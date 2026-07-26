@@ -99,6 +99,18 @@ async def test_character_sheet_is_persisted_audited_and_tenant_safe() -> None:
                     "wisdom": 15,
                     "charisma": 8,
                 },
+                "proficiencies": [
+                    {"category": "skill", "name": "Acrobacia"},
+                    {"category": "language", "name": "Comum"},
+                ],
+                "resources": [
+                    {
+                        "name": "Ki",
+                        "current_value": 2,
+                        "maximum_value": 2,
+                        "recovery": "short_rest",
+                    }
+                ],
             },
         )
         assert created.status_code == 201
@@ -115,6 +127,18 @@ async def test_character_sheet_is_persisted_audited_and_tenant_safe() -> None:
             "wisdom": 2,
             "charisma": -1,
         }
+        assert created.json()["proficiencies"] == [
+            {"category": "language", "name": "Comum"},
+            {"category": "skill", "name": "Acrobacia"},
+        ]
+        assert created.json()["resources"] == [
+            {
+                "name": "Ki",
+                "current_value": 2,
+                "maximum_value": 2,
+                "recovery": "short_rest",
+            }
+        ]
 
         assert (await master.get(f"/api/v1/characters/{character_id}")).status_code == 200
         assert (await outsider.get(f"/api/v1/characters/{character_id}")).status_code == 404
@@ -137,7 +161,17 @@ async def test_character_sheet_is_persisted_audited_and_tenant_safe() -> None:
 
         partial_ability_update = await player.patch(
             f"/api/v1/characters/{character_id}",
-            json={"abilities": {"strength": 13}},
+            json={
+                "abilities": {"strength": 13},
+                "resources": [
+                    {
+                        "name": "Ki",
+                        "current_value": 1,
+                        "maximum_value": 2,
+                        "recovery": "short_rest",
+                    }
+                ],
+            },
         )
         assert partial_ability_update.status_code == 200
         updated_scores = {
@@ -146,11 +180,21 @@ async def test_character_sheet_is_persisted_audited_and_tenant_safe() -> None:
         }
         assert updated_scores["strength"] == 13
         assert updated_scores["dexterity"] == 16
+        assert partial_ability_update.json()["resources"][0]["current_value"] == 1
+        assert len(partial_ability_update.json()["proficiencies"]) == 2
 
         updated = await master.patch(
             f"/api/v1/characters/{character_id}",
             json={
                 "hit_points_current": 12,
+                "resources": [
+                    {
+                        "name": "Ki",
+                        "current_value": 0,
+                        "maximum_value": 2,
+                        "recovery": "short_rest",
+                    }
+                ],
                 "reason": "Dano recebido durante a sessão",
             },
         )
@@ -172,6 +216,7 @@ async def test_character_sheet_is_persisted_audited_and_tenant_safe() -> None:
         assert reversed_update.status_code == 200
         restored = await player.get(f"/api/v1/characters/{character_id}")
         assert restored.json()["hit_points_current"] == 17
+        assert restored.json()["resources"][0]["current_value"] == 1
 
         second_master_update = await master.patch(
             f"/api/v1/characters/{character_id}",

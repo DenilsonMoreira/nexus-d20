@@ -22,6 +22,7 @@
 - abuso de endpoints públicos.
 - enumeração de contas pela recuperação de acesso.
 - reutilização ou vazamento de token de recuperação.
+- acesso direto a proficiências ou recursos sem autorização da ficha.
 
 ## Controles
 
@@ -37,3 +38,4 @@
 - resposta uniforme para solicitação de recuperação;
 - tokens opacos, curtos no tempo, armazenados como hash e de uso único;
 - revogação de todas as sessões após troca de senha.
+- proficiências e recursos acessíveis somente pelo personagem autorizado e sua campanha.

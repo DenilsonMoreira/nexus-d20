@@ -7,6 +7,29 @@ export type Ability = {
   modifier: number;
 };
 
+export type ProficiencyCategory =
+  | "saving_throw"
+  | "skill"
+  | "language"
+  | "tool"
+  | "weapon"
+  | "armor"
+  | "other";
+
+export type CharacterProficiency = {
+  category: ProficiencyCategory;
+  name: string;
+};
+
+export type ResourceRecovery = "short_rest" | "long_rest" | "manual";
+
+export type CharacterResource = {
+  name: string;
+  current_value: number;
+  maximum_value: number;
+  recovery: ResourceRecovery;
+};
+
 export type Character = {
   id: string;
   campaign_id: string;
@@ -25,6 +48,8 @@ export type Character = {
   initiative: number;
   speed_meters: number;
   abilities: Ability[];
+  proficiencies: CharacterProficiency[];
+  resources: CharacterResource[];
 };
 
 type Campaign = {
@@ -59,6 +84,8 @@ export type CharacterUpdate = {
   initiative: number;
   speed_meters: number;
   abilities: Record<string, number>;
+  proficiencies: CharacterProficiency[];
+  resources: CharacterResource[];
   reason?: string;
 };
 

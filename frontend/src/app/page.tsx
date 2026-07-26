@@ -35,6 +35,20 @@ const demoCharacter: Character = {
     { code: "dexterity", label: "DESTREZA", score: 16, modifier: 3 },
     { code: "constitution", label: "CONSTITUIÇÃO", score: 14, modifier: 2 },
   ],
+  proficiencies: [
+    { category: "skill", name: "Acrobacia" },
+    { category: "skill", name: "Furtividade" },
+    { category: "language", name: "Comum" },
+    { category: "weapon", name: "Armas simples" },
+  ],
+  resources: [
+    {
+      name: "Ki",
+      current_value: 2,
+      maximum_value: 2,
+      recovery: "short_rest",
+    },
+  ],
 };
 
 function formatModifier(value: number) {
@@ -49,6 +63,22 @@ const abilityOrder = [
   "dexterity",
   "constitution",
 ];
+
+const proficiencyLabels: Record<string, string> = {
+  saving_throw: "Salvaguarda",
+  skill: "Perícia",
+  language: "Idioma",
+  tool: "Ferramenta",
+  weapon: "Arma",
+  armor: "Armadura",
+  other: "Outra",
+};
+
+const recoveryLabels: Record<string, string> = {
+  short_rest: "Descanso curto",
+  long_rest: "Descanso longo",
+  manual: "Recuperação manual",
+};
 
 export default function Home() {
   const [active, setActive] = useState<ActiveCharacter | null>(null);
@@ -267,6 +297,77 @@ export default function Home() {
             <p className={styles.auditNote}>
               Alterações mecânicas ficam registradas no histórico da campanha.
             </p>
+          </article>
+        </div>
+
+        <div className={styles.detailsGrid}>
+          <article className={`${styles.card} ${styles.detailCard}`}>
+            <div className={styles.cardHeader}>
+              <div>
+                <span className={styles.eyebrow}>Treinamento</span>
+                <h2>Proficiências</h2>
+              </div>
+              <span className={styles.detailCount}>
+                {character.proficiencies.length}
+              </span>
+            </div>
+            {character.proficiencies.length === 0 ? (
+              <p className={styles.emptyDetail}>Nenhuma proficiência cadastrada.</p>
+            ) : (
+              <ul className={styles.proficiencyList}>
+                {character.proficiencies.map((proficiency) => (
+                  <li key={`${proficiency.category}-${proficiency.name}`}>
+                    <small>
+                      {proficiencyLabels[proficiency.category] ??
+                        proficiency.category}
+                    </small>
+                    <strong>{proficiency.name}</strong>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </article>
+
+          <article className={`${styles.card} ${styles.detailCard}`}>
+            <div className={styles.cardHeader}>
+              <div>
+                <span className={styles.eyebrow}>Uso e recuperação</span>
+                <h2>Recursos</h2>
+              </div>
+              <span className={styles.detailCount}>
+                {character.resources.length}
+              </span>
+            </div>
+            {character.resources.length === 0 ? (
+              <p className={styles.emptyDetail}>Nenhum recurso cadastrado.</p>
+            ) : (
+              <ul className={styles.resourceList}>
+                {character.resources.map((resource) => (
+                  <li key={resource.name}>
+                    <div>
+                      <strong>{resource.name}</strong>
+                      <span>
+                        {resource.current_value} / {resource.maximum_value}
+                      </span>
+                    </div>
+                    <div className={styles.resourceBar} aria-hidden="true">
+                      <span
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            (resource.current_value / resource.maximum_value) *
+                              100,
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                    <small>
+                      {recoveryLabels[resource.recovery] ?? resource.recovery}
+                    </small>
+                  </li>
+                ))}
+              </ul>
+            )}
           </article>
         </div>
       </section>

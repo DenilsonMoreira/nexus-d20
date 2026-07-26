@@ -30,7 +30,7 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 2 — Ficha inteligente
 
-**Status:** em andamento desde 23 de julho de 2026.
+**Status:** concluída em 26 de julho de 2026.
 
 - Personagem, atributos, modificadores e gráfico hexagonal.
 - Classe, nível, PV, CA, deslocamento, proficiências e recursos.

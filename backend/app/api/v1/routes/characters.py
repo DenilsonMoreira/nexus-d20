@@ -5,7 +5,12 @@ from sqlalchemy import select
 
 from app.api.dependencies import CampaignAccessDependency, CurrentUser, DatabaseSession
 from app.core.errors import AppError
-from app.models import CampaignMember, Character
+from app.models import (
+    CampaignMember,
+    Character,
+    CharacterProficiency,
+    CharacterResource,
+)
 from app.schemas.characters import (
     CharacterCreateRequest,
     CharacterListResponse,
@@ -52,7 +57,9 @@ async def create_character(
             "O responsável pela ficha deve ser mestre ou jogador da campanha.",
         )
 
-    values = payload.model_dump(exclude={"abilities", "owner_user_id"})
+    values = payload.model_dump(
+        exclude={"abilities", "owner_user_id", "proficiencies", "resources"}
+    )
     values.update(payload.abilities.model_dump())
     for field in (
         "name",
@@ -66,6 +73,10 @@ async def create_character(
     character = Character(
         campaign_id=access.campaign.id,
         owner_user_id=owner_user_id,
+        proficiencies=[
+            CharacterProficiency(**item.model_dump()) for item in payload.proficiencies
+        ],
+        resources=[CharacterResource(**item.model_dump()) for item in payload.resources],
         **values,
     )
     db.add(character)
@@ -130,13 +141,31 @@ async def update_character(
         raise AppError(403, "character_write_forbidden", "Observadores não editam fichas.")
 
     before = character_snapshot(character)
-    changes = payload.model_dump(exclude_unset=True, exclude={"abilities", "reason"})
+    changes = payload.model_dump(
+        exclude_unset=True,
+        exclude={"abilities", "proficiencies", "resources", "reason"},
+    )
     for field, value in changes.items():
         setattr(character, field, value.strip() if isinstance(value, str) else value)
     if payload.abilities is not None:
         ability_changes = payload.abilities.model_dump(exclude_unset=True)
         for field, value in ability_changes.items():
             setattr(character, field, value)
+    if payload.proficiencies is not None or payload.resources is not None:
+        if payload.proficiencies is not None:
+            character.proficiencies.clear()
+        if payload.resources is not None:
+            character.resources.clear()
+        await db.flush()
+        if payload.proficiencies is not None:
+            character.proficiencies.extend(
+                CharacterProficiency(**item.model_dump())
+                for item in payload.proficiencies
+            )
+        if payload.resources is not None:
+            character.resources.extend(
+                CharacterResource(**item.model_dump()) for item in payload.resources
+            )
     if character.hit_points_current > character.hit_points_max:
         raise AppError(
             422,

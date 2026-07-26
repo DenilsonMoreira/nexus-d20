@@ -21,6 +21,17 @@ const validValues = {
   intelligence: "10",
   wisdom: "15",
   charisma: "8",
+  proficiencies_json: JSON.stringify([
+    { category: "skill", name: "Acrobacia" },
+  ]),
+  resources_json: JSON.stringify([
+    {
+      name: "Ki",
+      current_value: 2,
+      maximum_value: 2,
+      recovery: "short_rest",
+    },
+  ]),
   reason: "Dano sofrido na sessão",
 };
 
@@ -37,6 +48,8 @@ describe("edição da ficha", () => {
       charisma: 8,
     });
     expect(payload.reason).toBe("Dano sofrido na sessão");
+    expect(payload.proficiencies[0].name).toBe("Acrobacia");
+    expect(payload.resources[0].recovery).toBe("short_rest");
     expect(payload).not.toHaveProperty("modifier");
   });
 
@@ -47,5 +60,21 @@ describe("edição da ficha", () => {
         hit_points_current: "18",
       }),
     ).toThrow("PV atuais não podem superar os PV máximos.");
+  });
+
+  it("bloqueia recurso atual superior ao máximo", () => {
+    expect(() =>
+      buildCharacterUpdate({
+        ...validValues,
+        resources_json: JSON.stringify([
+          {
+            name: "Ki",
+            current_value: 3,
+            maximum_value: 2,
+            recovery: "short_rest",
+          },
+        ]),
+      }),
+    ).toThrow("Revise os valores atuais e máximos dos recursos.");
   });
 });

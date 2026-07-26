@@ -5,8 +5,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import AppError
 from app.domain.rules.abilities import ability_modifier
-from app.models import Campaign, CampaignMember, Character
-from app.schemas.characters import AbilityResponse, CharacterResponse
+from app.models import (
+    Campaign,
+    CampaignMember,
+    Character,
+    CharacterProficiency,
+    CharacterResource,
+)
+from app.schemas.characters import (
+    AbilityResponse,
+    CharacterProficiencyInput,
+    CharacterProficiencyResponse,
+    CharacterResourceInput,
+    CharacterResourceResponse,
+    CharacterResponse,
+)
 
 ABILITY_FIELDS = (
     ("strength", "FORÇA"),
@@ -34,13 +47,42 @@ def character_snapshot(character: Character) -> dict[str, object]:
         "initiative": character.initiative,
         "speed_meters": character.speed_meters,
         "abilities": {field: getattr(character, field) for field, _ in ABILITY_FIELDS},
+        "proficiencies": [
+            {"category": item.category, "name": item.name}
+            for item in sorted(
+                character.proficiencies,
+                key=lambda value: (value.category, value.name.casefold()),
+            )
+        ],
+        "resources": [
+            {
+                "name": item.name,
+                "current_value": item.current_value,
+                "maximum_value": item.maximum_value,
+                "recovery": item.recovery,
+            }
+            for item in sorted(
+                character.resources,
+                key=lambda value: value.name.casefold(),
+            )
+        ],
     }
 
 
-def apply_character_snapshot(
+def normalize_character_snapshot(snapshot: dict[str, object]) -> dict[str, object]:
+    return {
+        **snapshot,
+        "proficiencies": snapshot.get("proficiencies", []),
+        "resources": snapshot.get("resources", []),
+    }
+
+
+async def apply_character_snapshot(
+    db: AsyncSession,
     character: Character,
     snapshot: dict[str, object],
 ) -> None:
+    snapshot = normalize_character_snapshot(snapshot)
     for field in (
         "name",
         "race_name",
@@ -62,6 +104,40 @@ def apply_character_snapshot(
         raise AppError(409, "audit_state_invalid", "O histórico da ficha está inválido.")
     for field, _ in ABILITY_FIELDS:
         setattr(character, field, abilities[field])
+    proficiencies = snapshot["proficiencies"]
+    resources = snapshot["resources"]
+    if not isinstance(proficiencies, list) or not isinstance(resources, list):
+        raise AppError(409, "audit_state_invalid", "O histórico da ficha está inválido.")
+    try:
+        proficiency_items = [
+            CharacterProficiencyInput.model_validate(item) for item in proficiencies
+        ]
+        resource_items = [CharacterResourceInput.model_validate(item) for item in resources]
+    except (TypeError, ValueError) as error:
+        raise AppError(
+            409,
+            "audit_state_invalid",
+            "O histórico da ficha está inválido.",
+        ) from error
+    character.proficiencies.clear()
+    character.resources.clear()
+    await db.flush()
+    character.proficiencies.extend(
+        CharacterProficiency(
+            category=item.category,
+            name=item.name,
+        )
+        for item in proficiency_items
+    )
+    character.resources.extend(
+        CharacterResource(
+            name=item.name,
+            current_value=item.current_value,
+            maximum_value=item.maximum_value,
+            recovery=item.recovery,
+        )
+        for item in resource_items
+    )
 
 
 def character_response(character: Character) -> CharacterResponse:
@@ -90,6 +166,19 @@ def character_response(character: Character) -> CharacterResponse:
                 modifier=ability_modifier(getattr(character, field)),
             )
             for field, label in ABILITY_FIELDS
+        ],
+        proficiencies=[
+            CharacterProficiencyResponse(category=item.category, name=item.name)
+            for item in character.proficiencies
+        ],
+        resources=[
+            CharacterResourceResponse(
+                name=item.name,
+                current_value=item.current_value,
+                maximum_value=item.maximum_value,
+                recovery=item.recovery,
+            )
+            for item in character.resources
         ],
         created_at=character.created_at,
         updated_at=character.updated_at,

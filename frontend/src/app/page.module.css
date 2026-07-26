@@ -180,6 +180,13 @@
   align-items: stretch;
 }
 
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
 .card {
   min-width: 0;
   position: relative;
@@ -393,6 +400,107 @@
   line-height: 1.5;
 }
 
+.detailCard {
+  min-height: 230px;
+}
+
+.detailCount {
+  min-width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #765832;
+  border-radius: 50%;
+  color: #d9b97f;
+  background: #201a14;
+  font-size: 12px;
+}
+
+.proficiencyList,
+.resourceList {
+  position: relative;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.proficiencyList {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: start;
+  gap: 8px;
+}
+
+.proficiencyList li {
+  display: grid;
+  gap: 4px;
+  padding: 9px 11px;
+  border: 1px solid #3c3126;
+  border-radius: 7px;
+  background: #11100f;
+}
+
+.proficiencyList small,
+.resourceList small {
+  color: #9e835d;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.proficiencyList strong {
+  color: #ddcbaa;
+  font-size: 12px;
+  font-weight: 550;
+}
+
+.resourceList {
+  display: grid;
+  gap: 12px;
+}
+
+.resourceList li {
+  display: grid;
+  gap: 7px;
+}
+
+.resourceList li > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #ded0b9;
+  font-size: 12px;
+}
+
+.resourceList li > div:first-child span {
+  color: #bea16f;
+}
+
+.resourceBar {
+  height: 6px;
+  overflow: hidden;
+  border: 1px solid #362e26;
+  border-radius: 99px;
+  background: #0d0d0c;
+}
+
+.resourceBar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #88632f, #d0a45e);
+}
+
+.emptyDetail {
+  position: relative;
+  margin: 18px 0 0;
+  padding: 20px;
+  border: 1px dashed #41352a;
+  color: #8f8478;
+  font-size: 12px;
+  text-align: center;
+}
+
 .mobileNav {
   display: none;
 }
@@ -409,6 +517,10 @@
   .summaryList {
     grid-template-columns: repeat(3, 1fr);
     gap: 4px 18px;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -442,6 +554,10 @@
   }
 
   .sheetGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .detailsGrid {
     grid-template-columns: 1fr;
   }
 
