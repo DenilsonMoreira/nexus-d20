@@ -115,6 +115,11 @@ class Character(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     intelligence: Mapped[int] = mapped_column(Integer, default=10)
     wisdom: Mapped[int] = mapped_column(Integer, default=10)
     charisma: Mapped[int] = mapped_column(Integer, default=10)
+    is_active_group: Mapped[bool] = mapped_column(Boolean, default=False)
+    hit_dice_current: Mapped[int] = mapped_column(Integer, default=1)
+    hit_dice_max: Mapped[int] = mapped_column(Integer, default=1)
+    exhaustion_level: Mapped[int] = mapped_column(Integer, default=0)
+    hidden_fatigue: Mapped[int] = mapped_column(Integer, default=0)
     proficiencies: Mapped[list["CharacterProficiency"]] = relationship(
         back_populates="character",
         cascade="all, delete-orphan",
@@ -126,6 +131,18 @@ class Character(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         cascade="all, delete-orphan",
         lazy="selectin",
         order_by="CharacterResource.name",
+    )
+    spell_slots: Mapped[list["CharacterSpellSlot"]] = relationship(
+        back_populates="character",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="CharacterSpellSlot.level",
+    )
+    conditions: Mapped[list["CharacterCondition"]] = relationship(
+        back_populates="character",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="CharacterCondition.name",
     )
 
 
@@ -173,6 +190,56 @@ class CharacterResource(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     character: Mapped[Character] = relationship(back_populates="resources")
 
 
+class CharacterSpellSlot(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "character_spell_slots"
+    __table_args__ = (
+        UniqueConstraint("character_id", "level"),
+        CheckConstraint("level BETWEEN 1 AND 9", name="level_range"),
+        CheckConstraint(
+            "current_value >= 0 AND current_value <= maximum_value",
+            name="current_value_range",
+        ),
+    )
+
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
+    )
+    level: Mapped[int] = mapped_column(Integer)
+    current_value: Mapped[int] = mapped_column(Integer)
+    maximum_value: Mapped[int] = mapped_column(Integer)
+    character: Mapped[Character] = relationship(back_populates="spell_slots")
+
+
+class CharacterCondition(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "character_conditions"
+
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
+    )
+    name: Mapped[str] = mapped_column(String(120))
+    description: Mapped[str] = mapped_column(Text, default="")
+    expires_on_long_rest: Mapped[bool] = mapped_column(Boolean, default=False)
+    character: Mapped[Character] = relationship(back_populates="conditions")
+
+
+class LongRestEvent(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "long_rest_events"
+    __table_args__ = (UniqueConstraint("campaign_id", "idempotency_key"),)
+
+    campaign_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("campaigns.id", ondelete="CASCADE"), index=True
+    )
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
+    )
+    actor_user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id")
+    )
+    idempotency_key: Mapped[str] = mapped_column(String(120))
+    request_hash: Mapped[str] = mapped_column(String(64))
+    result_data: Mapped[dict[str, Any]] = mapped_column(JSON)
+
+
 class Invite(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "invites"
 
@@ -197,6 +264,35 @@ class Note(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     title: Mapped[str] = mapped_column(String(200))
     body: Mapped[str] = mapped_column(Text, default="")
     visibility: Mapped[str] = mapped_column(String(30), default="private")
+
+
+class NoteLink(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "note_links"
+    __table_args__ = (UniqueConstraint("note_id", "entity_type", "entity_id"),)
+
+    note_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("notes.id", ondelete="CASCADE"), index=True
+    )
+    entity_type: Mapped[str] = mapped_column(String(40))
+    entity_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True))
+
+
+class MediaAsset(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "media_assets"
+
+    campaign_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("campaigns.id", ondelete="CASCADE"), index=True
+    )
+    note_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("notes.id", ondelete="CASCADE"), index=True
+    )
+    owner_user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id"), index=True
+    )
+    object_key: Mapped[str] = mapped_column(String(500), unique=True)
+    filename: Mapped[str] = mapped_column(String(255))
+    content_type: Mapped[str] = mapped_column(String(100))
+    size_bytes: Mapped[int] = mapped_column(Integer)
 
 
 class AuditLog(UUIDPrimaryKeyMixin, TimestampMixin, Base):

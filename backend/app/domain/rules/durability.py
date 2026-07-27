@@ -22,6 +22,24 @@ def percentage(current_points: int, maximum_points: int) -> Decimal:
     return value.quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
 
+def maximum_durability(
+    *,
+    material_points: int,
+    structure_multiplier: Decimal,
+    quality_multiplier: Decimal,
+    magic_multiplier: Decimal = Decimal("1"),
+) -> int:
+    if material_points <= 0:
+        raise ValueError("Os pontos-base do material devem ser maiores que zero.")
+    multipliers = (structure_multiplier, quality_multiplier, magic_multiplier)
+    if any(value <= 0 for value in multipliers):
+        raise ValueError("Os multiplicadores de durabilidade devem ser positivos.")
+    value = Decimal(material_points)
+    for multiplier in multipliers:
+        value *= multiplier
+    return max(1, int(value.quantize(Decimal("1"), rounding=ROUND_HALF_UP)))
+
+
 def state_for(percent: Decimal) -> DurabilityState:
     if percent > Decimal(75):
         return "Ótimo"

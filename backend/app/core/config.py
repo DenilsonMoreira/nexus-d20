@@ -22,6 +22,13 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_starttls: bool = False
     mail_from: str = "nao-responda@nexus-d20.local"
+    s3_endpoint: str = "http://localhost:9000"
+    s3_public_endpoint: str = "http://localhost:9000"
+    s3_bucket: str = "nexus-d20"
+    s3_access_key: str = "nexus_minio"
+    s3_secret_key: str = "nexus_minio_change_me"
+    s3_region: str = "us-east-1"
+    media_max_bytes: int = 10 * 1024 * 1024
     cors_origins_raw: str = Field(default="http://localhost:3000", alias="CORS_ORIGINS")
 
     @property

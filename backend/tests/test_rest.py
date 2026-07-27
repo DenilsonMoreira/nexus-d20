@@ -51,3 +51,23 @@ def test_antimagic_blocks_auto_repair() -> None:
         }
     )
     assert result["magic_items"][0]["current_points_after"] == 700
+
+
+def test_long_rest_restores_only_eligible_resources_and_requires_supplies() -> None:
+    result = simulate_long_rest(
+        {
+            "hit_points_current": 4,
+            "hit_points_maximum": 12,
+            "resources_current": {"long": 0, "short": 1, "manual": 2},
+            "resources_maximum": {"long": 3, "short": 4, "manual": 5},
+            "long_rest_resource_keys": ["long"],
+            "exhaustion_level": 2,
+            "hidden_fatigue": 3,
+            "has_sufficient_food": False,
+            "has_sufficient_water": True,
+        }
+    )
+    assert result["resources_after"] == {"long": 3, "short": 1, "manual": 2}
+    assert result["exhaustion_after"] == 2
+    assert result["hidden_fatigue_after"] == 2
+    assert result["warnings"]

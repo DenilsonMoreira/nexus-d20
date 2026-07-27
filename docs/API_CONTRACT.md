@@ -74,6 +74,36 @@ As listas enviadas em um `PATCH` substituem integralmente a respectiva coleção
 
 `POST /rules/progression/subclasses/simulate` recebe classe, nível alvo nessa classe e uma subclasse selecionada opcional. A resposta informa o nível da escolha, disponibilidade, obrigatoriedade e as opções públicas do SRD 5.1. Seleções antecipadas ou pertencentes a outra classe são rejeitadas. A rota não seleciona automaticamente e não persiste dados.
 
+## Inventário e durabilidade
+
+- `GET /campaigns/{campaign_id}/item-catalog` — materiais e qualidades.
+- `POST /campaigns/{campaign_id}/item-templates` — mestre cria modelo versionado.
+- `GET /campaigns/{campaign_id}/item-templates` — lista modelos da campanha.
+- `PUT /characters/{character_id}/professions` — substitui domínios profissionais.
+- `POST /characters/{character_id}/items` — mestre cria instância.
+- `GET /characters/{character_id}/items` — inventário com leitura de durabilidade conforme profissão.
+- `PATCH /items/{item_id}` — equipa ou seleciona arma ativa.
+- `POST /items/{item_id}/attacks/simulate` e `/apply` — calcula e aplica desgaste.
+- `POST /items/{item_id}/repairs` — mestre repara e gera auditoria reversível.
+
+## Notas e mídia
+
+- `POST|GET /campaigns/{campaign_id}/notes` — cria e lista notas visíveis.
+- `GET|PATCH|DELETE /notes/{note_id}` — leitura e operações exclusivas do autor.
+- `POST /notes/{note_id}/media` — registra imagem e emite URL temporária de upload.
+- `GET /notes/{note_id}/media/{asset_id}` — emite URL temporária de leitura.
+
+O mestre não recebe notas privadas e não pode editar notas de outro autor.
+
+## Painel do mestre e descanso
+
+- `GET /campaigns/{campaign_id}/master-dashboard` — grupo ativo, recursos e equipamentos.
+- `PATCH /characters/{character_id}/master-state` — seleção, dados de vida, exaustão e fadiga.
+- `PUT /characters/{character_id}/spell-slots` — substitui espaços persistidos.
+- `POST /characters/{character_id}/conditions` — registra condição.
+- `POST /characters/{character_id}/long-rest/simulate` — simula sem mutação.
+- `POST /characters/{character_id}/long-rest/apply` — aplica com `Idempotency-Key`.
+
 ## Convenções
 
 Resposta de erro:

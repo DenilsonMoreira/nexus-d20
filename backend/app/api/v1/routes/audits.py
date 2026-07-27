@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 from app.api.dependencies import CurrentUser, DatabaseSession
 from app.core.errors import AppError
-from app.models import AuditLog, Campaign, CampaignMember, Character
+from app.models import AuditLog, Campaign, CampaignMember, Character, ItemInstance
 from app.schemas.audit import AuditResponse, AuditReverseRequest
 from app.services.audit import mark_reversed
 from app.services.characters import (
@@ -13,6 +13,7 @@ from app.services.characters import (
     character_snapshot,
     normalize_character_snapshot,
 )
+from app.services.rest_state import apply_rest_snapshot, load_rest_character, rest_snapshot
 
 router = APIRouter()
 
@@ -61,6 +62,35 @@ async def reverse_audit(
         ):
             raise AppError(409, "audit_state_changed", "O estado atual impede a reversão.")
         await apply_character_snapshot(db, character, audit.before_data)
+    elif audit.action == "item.durability_changed" and audit.entity_id is not None:
+        item = await db.get(ItemInstance, audit.entity_id)
+        current = {
+            "current_durability": item.current_durability if item else None,
+            "equipped": item.equipped if item else None,
+            "is_active_weapon": item.is_active_weapon if item else None,
+        }
+        if (
+            item is None
+            or item.campaign_id != audit.campaign_id
+            or audit.before_data is None
+            or audit.after_data is None
+            or current != audit.after_data
+        ):
+            raise AppError(409, "audit_state_changed", "O estado atual impede a reversÃ£o.")
+        item.current_durability = int(audit.before_data["current_durability"])
+        item.equipped = bool(audit.before_data["equipped"])
+        item.is_active_weapon = bool(audit.before_data["is_active_weapon"])
+    elif audit.action == "long_rest.applied" and audit.entity_id is not None:
+        character = await load_rest_character(db, audit.entity_id)
+        if (
+            character is None
+            or character.campaign_id != audit.campaign_id
+            or audit.before_data is None
+            or audit.after_data is None
+            or await rest_snapshot(db, character) != audit.after_data
+        ):
+            raise AppError(409, "audit_state_changed", "O estado atual impede a reversÃ£o.")
+        await apply_rest_snapshot(db, character, audit.before_data)
     else:
         raise AppError(409, "audit_not_reversible", "Esta alteração não pode ser revertida.")
     reversal = mark_reversed(

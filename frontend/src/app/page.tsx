@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AbilityRadar } from "@/components/AbilityRadar";
 import { CharacterEditor } from "@/components/CharacterEditor";
+import { CampaignWorkspace } from "@/components/CampaignWorkspace";
 import {
   type ActiveCharacter,
   type Character,
@@ -370,6 +371,11 @@ export default function Home() {
             )}
           </article>
         </div>
+        <CampaignWorkspace
+          campaignId={active?.campaign.id}
+          characterId={active?.character.id}
+          role={active?.campaign.role}
+        />
       </section>
 
       <nav className={styles.mobileNav} aria-label="Navegação móvel">

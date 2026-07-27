@@ -141,3 +141,15 @@ O aumento de atributos de 2014 aceita exatamente `+2` em um atributo ou `+1` em 
 ## D-033 — Catálogo público de subclasses SRD
 
 O catálogo público inicial inclui somente a subclasse efetivamente detalhada no SRD 5.1 para cada uma das doze classes. Menções a outras opções sem conteúdo detalhado no SRD não autorizam sua inclusão. Cada definição registra o nível da escolha e uma origem explícita. Mesmo quando existe apenas uma opção pública disponível, a simulação nunca a seleciona automaticamente; a confirmação do usuário continua obrigatória. Conteúdo privado e personalizado será separado do catálogo público em camada posterior.
+
+## D-034 — Durabilidade persistida e leitura profissional
+
+A durabilidade máxima de uma versão de item é calculada de forma determinística a partir dos pontos do material e dos multiplicadores de estrutura, qualidade e magia. Instâncias preservam o máximo calculado no momento da criação. O mestre sempre recebe valores exatos; o jogador recebe pontos e percentual apenas quando o personagem possui a profissão correspondente, mantendo estado, penalidade e risco de quebra visíveis. Itens mágicos não caem abaixo de 50% sem sobrescrita explícita do mestre. Desgaste e reparo geram eventos, e mudanças feitas pelo mestre são auditáveis e reversíveis enquanto o estado não divergir.
+
+## D-035 — Privacidade das notas e mídia temporária
+
+O autor da nota é imutável e é o único usuário autorizado a editar ou excluir seu conteúdo. Notas privadas são visíveis apenas ao autor, inclusive contra acesso do mestre; notas compartilhadas são legíveis pelos membros da campanha, sem transferir permissão de edição. Conteúdo privado não é copiado para a auditoria mecânica da campanha. Imagens aceitam somente formatos raster autorizados, respeitam limite configurável e são armazenadas em chave isolada por campanha e nota. Upload e leitura usam URLs S3 temporárias assinadas.
+
+## D-036 — Descanso longo idempotente e reversível
+
+O painel do mestre opera somente sobre personagens marcados no grupo ativo e exibe PV, recursos, condições e itens equipados ou ativos. Descanso longo é simulado antes da aplicação pelo mesmo motor puro. A aplicação exige `Idempotency-Key`, restaura somente recursos declarados como `long_rest`, respeita alimento, água e antimagia, expira condições configuradas e grava snapshot integral antes/depois. Repetir a mesma chave e payload devolve o resultado original sem nova mutação; reutilizá-la com outro payload falha. A reversão só ocorre se o estado atual ainda corresponder ao snapshot posterior.

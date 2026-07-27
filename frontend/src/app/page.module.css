@@ -505,7 +505,7 @@
   display: none;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1420px) {
   .sheetGrid {
     grid-template-columns: minmax(280px, 0.9fr) minmax(390px, 1.2fr);
   }

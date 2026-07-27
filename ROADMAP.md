@@ -53,6 +53,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 4 — Inventário, materiais e durabilidade
 
+**Status:** concluída em 27 de julho de 2026.
+
 - Catálogo, modelos, variações e instâncias.
 - Materiais, qualidade, peso, preço e durabilidade.
 - Ataques e cálculo de desgaste.
@@ -64,6 +66,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 5 — Notas e mídia
 
+**Status:** concluída em 27 de julho de 2026.
+
 - Notas privadas e compartilhadas.
 - Imagens em MinIO/S3.
 - Vínculos com personagem, local, item, NPC, sessão e evento.
@@ -72,6 +76,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 **Aceite:** teste de segurança prova que o mestre não lê nota privada nem edita qualquer nota de jogador.
 
 ## Fase 6 — Painel do mestre e descanso
+
+**Status:** concluída em 27 de julho de 2026.
 
 - Grupo ativo e personagens selecionados.
 - Armas ativas e recursos atuais.
