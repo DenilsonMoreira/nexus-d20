@@ -2,7 +2,7 @@
 
 Plataforma web para centralizar fichas, evolução de personagens, magias, inventário, durabilidade, viagens e preparação de campanhas de RPG usando **D&D 5e — regras de 2014** como base, com regras personalizáveis pelo mestre.
 
-> Estado atual: fundação executável do produto e especificação fechada do MVP para desenvolvimento pelo Codex.
+> Estado atual: fundação executável do produto e especificação fechada para desenvolvimento incremental do MVP.
 
 ## Visão do produto
 
@@ -76,7 +76,6 @@ npm run dev
 
 ```text
 nexus-d20/
-├── AGENTS.md
 ├── ROADMAP.md
 ├── DECISIONS.md
 ├── compose.yaml
@@ -89,17 +88,16 @@ nexus-d20/
 └── .github/
 ```
 
-## Documentos obrigatórios para o Codex
+## Documentos do projeto
 
 Leia nesta ordem:
 
-1. `AGENTS.md`
-2. `docs/PRODUCT_SPEC.md`
-3. `docs/RULES_ENGINE.md`
-4. `docs/PERMISSIONS.md`
-5. `docs/DATA_MODEL.md`
-6. `ROADMAP.md`
-7. `DECISIONS.md`
+1. `docs/PRODUCT_SPEC.md`
+2. `docs/RULES_ENGINE.md`
+3. `docs/PERMISSIONS.md`
+4. `docs/DATA_MODEL.md`
+5. `ROADMAP.md`
+6. `DECISIONS.md`
 
 ## Conteúdo de D&D
 
