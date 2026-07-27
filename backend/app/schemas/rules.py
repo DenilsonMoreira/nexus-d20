@@ -14,6 +14,10 @@ from app.domain.rules.class_progression import (
     RequiredChoice,
     validate_hit_point_choice,
 )
+from app.domain.rules.subclass_progression import (
+    SubclassId,
+    validate_subclass_selection,
+)
 
 
 class AttackRequest(BaseModel):
@@ -210,3 +214,34 @@ class AbilityScoreImprovementSimulationResponse(BaseModel):
     modifiers_after: AbilityModifierValues
     constitution_modifier_change: int
     hit_point_maximum_adjustment: int
+
+
+class SubclassProgressionSimulationRequest(BaseModel):
+    class_id: ClassId
+    target_class_level: int = Field(ge=1, le=20)
+    selected_subclass_id: SubclassId | None = None
+
+    def model_post_init(self, __context: object) -> None:
+        validate_subclass_selection(
+            class_id=self.class_id,
+            target_class_level=self.target_class_level,
+            selected_subclass_id=self.selected_subclass_id,
+        )
+
+
+class SubclassOptionResponse(BaseModel):
+    id: SubclassId
+    label: str
+    source: Literal["srd_5_1"]
+
+
+class SubclassProgressionSimulationResponse(BaseModel):
+    class_id: ClassId
+    class_label: str
+    target_class_level: int
+    choice_level: int
+    choice_available: bool
+    selection_required: bool
+    selected_subclass_id: SubclassId | None
+    selected_subclass_label: str | None
+    available_subclasses: list[SubclassOptionResponse]

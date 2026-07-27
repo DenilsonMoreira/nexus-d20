@@ -38,3 +38,4 @@
 - Simulação pura do próximo nível, com elegibilidade por XP, suporte a avanço por marco e limite no nível 20.
 - Fundação de progressão das doze classes SRD com dados de vida, ganho de PV e escolhas pendentes de aumento de atributo.
 - Simulação de aumento de atributos com limite 20, resumo antes/depois e ajuste retroativo de PV por Constituição.
+- Catálogo público das doze subclasses SRD e simulação dos pontos obrigatórios de escolha.

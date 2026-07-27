@@ -9,6 +9,7 @@ from app.domain.rules.progression import (
     progression_snapshot,
     simulate_next_level,
 )
+from app.domain.rules.subclass_progression import simulate_subclass_choice
 
 __all__ = [
     "ability_modifier",
@@ -18,4 +19,5 @@ __all__ = [
     "simulate_ability_score_improvement",
     "simulate_class_level_up",
     "simulate_next_level",
+    "simulate_subclass_choice",
 ]

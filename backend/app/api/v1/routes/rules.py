@@ -9,6 +9,7 @@ from app.domain.rules.durability import durability_snapshot
 from app.domain.rules.encumbrance import calculate_encumbrance
 from app.domain.rules.progression import simulate_next_level
 from app.domain.rules.rest import simulate_long_rest
+from app.domain.rules.subclass_progression import simulate_subclass_choice
 from app.schemas.rules import (
     AbilityScoreImprovementSimulationRequest,
     AbilityScoreImprovementSimulationResponse,
@@ -24,6 +25,8 @@ from app.schemas.rules import (
     LongRestResponse,
     ProgressionSimulationRequest,
     ProgressionSimulationResponse,
+    SubclassProgressionSimulationRequest,
+    SubclassProgressionSimulationResponse,
 )
 
 router = APIRouter()
@@ -83,4 +86,16 @@ def ability_score_progression(
     values = payload.model_dump()
     return AbilityScoreImprovementSimulationResponse.model_validate(
         simulate_ability_score_improvement(**values)
+    )
+
+
+@router.post(
+    "/progression/subclasses/simulate",
+    response_model=SubclassProgressionSimulationResponse,
+)
+def subclass_progression(
+    payload: SubclassProgressionSimulationRequest,
+) -> SubclassProgressionSimulationResponse:
+    return SubclassProgressionSimulationResponse.model_validate(
+        simulate_subclass_choice(**payload.model_dump())
     )

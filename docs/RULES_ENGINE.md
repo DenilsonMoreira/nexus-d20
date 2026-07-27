@@ -94,6 +94,27 @@ ajuste_PV_máximo = diferença_do_modificador × nível_total_resultante
 
 Assim, a mudança considera todos os níveis já alcançados, inclusive o novo. Talentos são uma regra opcional separada e não fazem parte desta simulação.
 
+### 3.3. Escolha de subclasse
+
+O catálogo público contém somente uma subclasse detalhada pelo SRD 5.1 para cada classe:
+
+| Classe | Nível da escolha | Subclasse SRD |
+|---|---:|---|
+| Bárbaro | 3 | Caminho do Berserker |
+| Bardo | 3 | Colégio do Conhecimento |
+| Clérigo | 1 | Domínio da Vida |
+| Druida | 2 | Círculo da Terra |
+| Guerreiro | 3 | Campeão |
+| Monge | 3 | Caminho da Mão Aberta |
+| Paladino | 3 | Juramento de Devoção |
+| Patrulheiro | 3 | Caçador |
+| Ladino | 3 | Ladrão |
+| Feiticeiro | 1 | Linhagem Dracônica |
+| Bruxo | 1 | Patrono Corruptor |
+| Mago | 2 | Escola de Evocação |
+
+A simulação informa quando a escolha ainda não está disponível, quando se torna obrigatória e se a seleção pertence à classe. A única opção pública nunca é escolhida automaticamente. Opções privadas ou personalizadas serão compostas separadamente.
+
 ## 4. Ataque
 
 ```text

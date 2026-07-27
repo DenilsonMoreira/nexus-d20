@@ -40,6 +40,7 @@ Cada item deve resultar em PR independente ou em um conjunto pequeno e coerente.
    - [ ] progressão e escolhas por classe;
      - [x] dados de vida, PV e níveis de aumento de atributo das doze classes SRD;
      - [x] escolha de aumento de atributos e ajuste retroativo de PV por Constituição;
+     - [x] catálogo SRD e pontos obrigatórios de escolha de subclasse;
      - [ ] características, subclasses e demais escolhas de cada nível;
    - [ ] aplicação idempotente e auditada;
    - [ ] magias, slots e multiclasse.

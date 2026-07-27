@@ -21,6 +21,7 @@ Antes de publicar, incluir atribuição final conforme exigências da Creative C
 - Tabela de avanço por experiência e bônus de proficiência: SRD 5.1, níveis 1 a 20. A implementação contém apenas os valores mecânicos necessários ao cálculo; a atribuição final deve seguir a licença autorizada adotada para o conteúdo SRD.
 - Dados de vida, valores fixos de PV e níveis de aumento de atributo das doze classes: SRD 5.1. Somente identificadores e valores mecânicos necessários à simulação são incluídos.
 - Distribuição do aumento de atributos, limite 20 e ajuste retroativo de PV por Constituição: SRD 5.1. A implementação registra somente a mecânica calculável.
+- Nomes e níveis de escolha das doze subclasses públicas detalhadas: SRD 5.1. Opções apenas mencionadas, sem conteúdo detalhado nessa fonte, não são incluídas.
 
 ## Marcas
 

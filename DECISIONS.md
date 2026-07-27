@@ -137,3 +137,7 @@ A primeira camada de progressão por classe cobre as doze classes do SRD 5.1 ape
 ## D-032 — Simulação de aumento de atributos
 
 O aumento de atributos de 2014 aceita exatamente `+2` em um atributo ou `+1` em dois atributos diferentes e não eleva uma pontuação acima de 20. A simulação devolve pontuações e modificadores antes/depois. Quando Constituição muda de faixa de modificador, o ajuste do máximo de PV é a diferença do modificador multiplicada pelo nível total resultante, contemplando retroativamente todos os níveis alcançados. Talentos e aplicação persistente não integram esta camada.
+
+## D-033 — Catálogo público de subclasses SRD
+
+O catálogo público inicial inclui somente a subclasse efetivamente detalhada no SRD 5.1 para cada uma das doze classes. Menções a outras opções sem conteúdo detalhado no SRD não autorizam sua inclusão. Cada definição registra o nível da escolha e uma origem explícita. Mesmo quando existe apenas uma opção pública disponível, a simulação nunca a seleciona automaticamente; a confirmação do usuário continua obrigatória. Conteúdo privado e personalizado será separado do catálogo público em camada posterior.

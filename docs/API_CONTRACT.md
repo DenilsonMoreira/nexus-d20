@@ -64,12 +64,15 @@ As listas enviadas em um `PATCH` substituem integralmente a respectiva coleção
 - `POST /rules/progression/simulate`
 - `POST /rules/progression/classes/simulate`
 - `POST /rules/progression/ability-scores/simulate`
+- `POST /rules/progression/subclasses/simulate`
 
 `POST /rules/progression/simulate` recebe `current_level` e `experience_points` opcional. A resposta descreve o nível atual, o próximo nível, limiares de XP, bônus de proficiência, XP restante e qualificação. A operação avalia somente o próximo nível e não persiste mudanças. Sem XP, a qualificação é `not_evaluated`; no nível 20, é `level_cap`.
 
 `POST /rules/progression/classes/simulate` recebe uma das doze classes SRD, nível atual nessa classe, modificador de Constituição e método de PV opcional. O método `fixed` usa o valor médio arredondado para cima; `rolled` exige que o cliente informe um resultado válido para o dado da classe. A resposta informa ganho de PV e escolhas pendentes de `hit_points` ou `ability_score_improvement`. O contrato cobre somente PV e aumento de atributo, não sinaliza conclusão integral da subida e não altera o banco.
 
 `POST /rules/progression/ability-scores/simulate` recebe as seis pontuações atuais, os aumentos escolhidos e o nível total resultante. Aceita somente `+2` em um atributo ou `+1` em dois atributos diferentes, sem superar 20. A resposta contém pontuações e modificadores antes/depois, mudança do modificador de Constituição e ajuste correspondente do máximo de PV. A rota não valida se a classe concede a escolha naquele nível; essa composição pertence ao assistente completo.
+
+`POST /rules/progression/subclasses/simulate` recebe classe, nível alvo nessa classe e uma subclasse selecionada opcional. A resposta informa o nível da escolha, disponibilidade, obrigatoriedade e as opções públicas do SRD 5.1. Seleções antecipadas ou pertencentes a outra classe são rejeitadas. A rota não seleciona automaticamente e não persiste dados.
 
 ## Convenções
 
