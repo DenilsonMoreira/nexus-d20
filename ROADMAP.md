@@ -89,6 +89,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 7 — Biblioteca do mestre
 
+**Status:** concluída em 27 de julho de 2026.
+
 - Itens, magias, condições, preços e serviços.
 - Duplicação e personalização.
 - Lojas e estoque.
@@ -98,6 +100,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 8 — Bestiário e encontros
 
+**Status:** concluída em 27 de julho de 2026.
+
 - Criaturas, cópias, equipamentos e tesouro.
 - Biomas, clima, horário e perigo.
 - Gerador ponderado de encontros.
@@ -106,6 +110,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 **Aceite:** dificuldade é apresentada como estimativa e pode ser ajustada pelo mestre.
 
 ## Fase 9 — Viagem, peso e fadiga
+
+**Status:** concluída em 27 de julho de 2026.
 
 - Peso em kg e distâncias métricas.
 - Sobrecarga variante.
@@ -117,6 +123,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 **Aceite:** inventário recalcula carga e viagem recalcula deslocamento e risco individual.
 
 ## Fase 10 — Teia de conhecimento e construtor de painéis
+
+**Status:** concluída em 27 de julho de 2026.
 
 - Nós, conexões, linha do tempo e segredos.
 - Cards configuráveis e layouts.

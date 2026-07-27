@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AbilityRadar } from "@/components/AbilityRadar";
 import { CharacterEditor } from "@/components/CharacterEditor";
 import { CampaignWorkspace } from "@/components/CampaignWorkspace";
+import { MasterToolkit } from "@/components/MasterToolkit";
 import {
   type ActiveCharacter,
   type Character,
@@ -372,6 +373,11 @@ export default function Home() {
           </article>
         </div>
         <CampaignWorkspace
+          campaignId={active?.campaign.id}
+          characterId={active?.character.id}
+          role={active?.campaign.role}
+        />
+        <MasterToolkit
           campaignId={active?.campaign.id}
           characterId={active?.character.id}
           role={active?.campaign.role}

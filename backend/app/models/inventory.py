@@ -1,7 +1,16 @@
 import uuid
 from decimal import Decimal
 
-from sqlalchemy import Boolean, CheckConstraint, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -41,6 +50,11 @@ class ItemTemplate(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
 class ItemTemplateVersion(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "item_template_versions"
+    __table_args__ = (
+        UniqueConstraint(
+            "template_id", "version_number", name="uq_item_template_version"
+        ),
+    )
 
     template_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("item_templates.id", ondelete="CASCADE"), index=True
@@ -61,6 +75,11 @@ class ItemTemplateVersion(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 
 class CharacterProfession(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "character_professions"
+    __table_args__ = (
+        UniqueConstraint(
+            "character_id", "domain", name="uq_character_profession_domain"
+        ),
+    )
 
     character_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True

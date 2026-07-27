@@ -153,3 +153,23 @@ O autor da nota é imutável e é o único usuário autorizado a editar ou exclu
 ## D-036 — Descanso longo idempotente e reversível
 
 O painel do mestre opera somente sobre personagens marcados no grupo ativo e exibe PV, recursos, condições e itens equipados ou ativos. Descanso longo é simulado antes da aplicação pelo mesmo motor puro. A aplicação exige `Idempotency-Key`, restaura somente recursos declarados como `long_rest`, respeita alimento, água e antimagia, expira condições configuradas e grava snapshot integral antes/depois. Repetir a mesma chave e payload devolve o resultado original sem nova mutação; reutilizá-la com outro payload falha. A reversão só ocorre se o estado atual ainda corresponder ao snapshot posterior.
+
+## D-037 — Biblioteca versionada por cópia
+
+Entradas de item, magia, condição e serviço registram a origem da cópia. A personalização usa uma cópia profunda dos dados e nunca compartilha estruturas mutáveis com o original. Lojas referenciam entradas da campanha, mas quantidade, preço e ocultação pertencem ao estoque da loja. Segredo e identificação são filtrados no servidor.
+
+## D-038 — Encontros reproduzíveis e dificuldade estimada
+
+O gerador de encontros filtra criaturas pelo bioma, aplica pesos configuráveis e recebe uma semente persistida para permitir reprodução. A dificuldade é sempre apresentada como estimativa; o mestre pode ajustar criaturas e dificuldade antes ou durante o combate. Geração, início e alterações relevantes permanecem no histórico do encontro.
+
+## D-039 — Viagem derivada do inventário
+
+A carga pessoal é recalculada a partir das instâncias de item e suas quantidades; itens equipados continuam pesando. O personagem com menor deslocamento efetivo limita o grupo. Distância usa quilômetros, carga usa quilogramas e marcha forçada gera CDs a partir da nona hora. Fadiga oculta permanece opcional e separada da exaustão oficial.
+
+## D-040 — Apresentação segura por construção
+
+Nós e conexões secretas são removidos no servidor antes de formar grafos compartilhados. Painéis em modo apresentação passam por sanitização recursiva que elimina cards secretos e chaves privadas antes da serialização; o cliente público nunca recebe dados para esconder apenas com CSS ou JavaScript.
+
+## D-041 — Auditoria de dependências como gate
+
+A CI executa `pip-audit` no ambiente Python e `npm audit` no front-end. Vulnerabilidades altas ou críticas bloqueiam a publicação. Quando não existe correção dentro da faixa atual, uma atualização major ou substituição transitiva pode ser adotada de forma pontual, desde que lint, tipagem, testes e build de produção comprovem compatibilidade. Overrides devem usar versões exatas e permanecer documentados no lockfile.

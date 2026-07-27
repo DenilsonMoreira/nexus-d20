@@ -26,6 +26,17 @@ from app.models.inventory import (
     Material,
     QualityLevel,
 )
+from app.models.world import (
+    Creature,
+    DashboardLayout,
+    Encounter,
+    KnowledgeEdge,
+    KnowledgeNode,
+    LibraryEntry,
+    Shop,
+    ShopStock,
+    TravelPlan,
+)
 
 __all__ = [
     "AuditLog",
@@ -38,11 +49,17 @@ __all__ = [
     "CharacterProficiency",
     "CharacterResource",
     "CharacterSpellSlot",
+    "Creature",
+    "DashboardLayout",
     "DurabilityEvent",
+    "Encounter",
     "Invite",
     "ItemInstance",
     "ItemTemplate",
     "ItemTemplateVersion",
+    "KnowledgeEdge",
+    "KnowledgeNode",
+    "LibraryEntry",
     "LongRestEvent",
     "Material",
     "MediaAsset",
@@ -51,5 +68,8 @@ __all__ = [
     "PasswordResetToken",
     "QualityLevel",
     "Session",
+    "Shop",
+    "ShopStock",
+    "TravelPlan",
     "User",
 ]

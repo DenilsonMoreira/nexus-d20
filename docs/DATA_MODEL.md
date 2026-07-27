@@ -88,3 +88,15 @@
 - `(campaign_id, category, name)` em templates.
 - `(item_instance_id, created_at)` em durabilidade.
 - GIN para tags e busca textual em português.
+## Preparação, mundo e apresentação
+
+- `library_entries`: conteúdo da biblioteca e linhagem de cópia.
+- `shops` e `shop_stock`: estabelecimento, estoque, preço e ocultação.
+- `creatures`: bestiário da campanha, biomas, equipamento e tesouro.
+- `encounters`: semente, composição, dificuldade estimada, estado e histórico.
+- `travel_plans`: percurso métrico, viajantes e resultado derivado da carga.
+- `knowledge_nodes` e `knowledge_edges`: teia relacional e linha do tempo.
+- `dashboard_layouts`: cards, modelos e visibilidade do painel.
+
+Todas as entidades pertencem a uma campanha. Chaves estrangeiras e a camada de
+autorização impedem referências entre campanhas.

@@ -139,3 +139,27 @@ Idempotency-Key: uuid
 
 - `POST /.../simulate` nunca altera o banco.
 - `POST /.../apply` recebe a simulação ou sua versão, valida mudanças concorrentes e grava auditoria.
+## Fases 7–10 — ferramentas do mestre
+
+Todas as rotas de escrita abaixo exigem papel `master` na campanha:
+
+- `GET|POST /api/v1/campaigns/{campaign_id}/library`
+- `PATCH /api/v1/campaigns/{campaign_id}/library/{entry_id}`
+- `POST /api/v1/campaigns/{campaign_id}/library/{entry_id}/duplicate`
+- `GET|POST /api/v1/campaigns/{campaign_id}/shops`
+- `PUT /api/v1/campaigns/{campaign_id}/shops/{shop_id}/stock`
+- `GET|POST /api/v1/campaigns/{campaign_id}/creatures`
+- `PATCH /api/v1/campaigns/{campaign_id}/creatures/{creature_id}`
+- `POST /api/v1/campaigns/{campaign_id}/creatures/{creature_id}/duplicate`
+- `POST /api/v1/campaigns/{campaign_id}/encounters/generate`
+- `PATCH /api/v1/campaigns/{campaign_id}/encounters/{encounter_id}`
+- `GET /api/v1/campaigns/{campaign_id}/characters/{character_id}/encumbrance`
+- `POST /api/v1/campaigns/{campaign_id}/travel-plans`
+- `GET /api/v1/campaigns/{campaign_id}/knowledge`
+- `POST /api/v1/campaigns/{campaign_id}/knowledge/nodes`
+- `POST /api/v1/campaigns/{campaign_id}/knowledge/edges`
+- `GET|POST /api/v1/campaigns/{campaign_id}/dashboards`
+
+`GET /api/v1/presentations/{layout_id}` aceita somente layouts com visibilidade
+`presentation` e devolve cards já sanitizados. Campos secretos não integram o
+payload HTTP.

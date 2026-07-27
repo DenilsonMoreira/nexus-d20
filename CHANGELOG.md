@@ -39,3 +39,13 @@
 - Fundação de progressão das doze classes SRD com dados de vida, ganho de PV e escolhas pendentes de aumento de atributo.
 - Simulação de aumento de atributos com limite 20, resumo antes/depois e ajuste retroativo de PV por Constituição.
 - Catálogo público das doze subclasses SRD e simulação dos pontos obrigatórios de escolha.
+## 2026-07-27 — Fases 7 a 10 e segurança
+
+- Biblioteca do mestre com cópias independentes, conteúdo secreto, lojas e estoque.
+- Bestiário, duplicação de criaturas, encontros ponderados e histórico de combate.
+- Carga derivada do inventário, planejador métrico, marcha forçada e fadiga opcional.
+- Teia de conhecimento, linha do tempo e construtor de painéis com apresentação segura.
+- Central do mestre responsiva alinhada ao mockup gótico.
+- `pytest` atualizado para corrigir `PYSEC-2026-1845`.
+- `sharp`, `minimatch` e `brace-expansion` fixados em versões sem os alertas detectados.
+- Auditorias Python e npm adicionadas como gates da CI.

@@ -9,6 +9,7 @@ from app.api.v1.routes import (
     master,
     notes,
     rules,
+    world,
 )
 
 api_router = APIRouter()
@@ -29,4 +30,8 @@ api_router.include_router(notes.campaign_router, prefix="/campaigns", tags=["not
 api_router.include_router(notes.router, prefix="/notes", tags=["notes"])
 api_router.include_router(master.campaign_router, prefix="/campaigns", tags=["master"])
 api_router.include_router(master.character_router, prefix="/characters", tags=["master"])
+api_router.include_router(world.campaign_router, prefix="/campaigns", tags=["world"])
+api_router.include_router(
+    world.presentation_router, prefix="/presentations", tags=["presentations"]
+)
 api_router.include_router(rules.router, prefix="/rules", tags=["rules"])

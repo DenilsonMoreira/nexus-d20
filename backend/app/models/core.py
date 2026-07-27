@@ -259,8 +259,12 @@ class Invite(UUIDPrimaryKeyMixin, TimestampMixin, Base):
 class Note(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "notes"
 
-    campaign_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("campaigns.id"))
-    owner_user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id"))
+    campaign_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("campaigns.id"), index=True
+    )
+    owner_user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id"), index=True
+    )
     title: Mapped[str] = mapped_column(String(200))
     body: Mapped[str] = mapped_column(Text, default="")
     visibility: Mapped[str] = mapped_column(String(30), default="private")
