@@ -8,12 +8,15 @@ from app.api.v1.routes import (
     inventory,
     master,
     notes,
+    privacy,
+    progression,
     rules,
     world,
 )
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(privacy.router, prefix="/account", tags=["privacy"])
 api_router.include_router(audits.router, prefix="/campaign-audits", tags=["audit"])
 api_router.include_router(
     campaigns.invite_router, prefix="/campaign-invites", tags=["campaigns"]
@@ -23,6 +26,9 @@ api_router.include_router(
     characters.campaign_router, prefix="/campaigns", tags=["characters"]
 )
 api_router.include_router(characters.router, prefix="/characters", tags=["characters"])
+api_router.include_router(
+    progression.router, prefix="/characters", tags=["progression"]
+)
 api_router.include_router(inventory.campaign_router, prefix="/campaigns", tags=["inventory"])
 api_router.include_router(inventory.character_router, prefix="/characters", tags=["inventory"])
 api_router.include_router(inventory.router, prefix="/items", tags=["inventory"])

@@ -1,0 +1,43 @@
+name: Homologation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homologation
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: cp .env.example .env
+      - run: docker compose -f compose.prod.yaml config --quiet
+
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: homologation
+    steps:
+      - uses: actions/checkout@v7
+      - name: Configurar SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          SSH_HOST_KEY: ${{ secrets.STAGING_SSH_HOST_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_HOST_KEY" > ~/.ssh/known_hosts
+      name: Implantar revisão em homologação
+        env:
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_USER: ${{ secrets.STAGING_USER }}
+          STAGING_PATH: ${{ secrets.STAGING_PATH }}
+        run: |
+          ssh "${STAGING_USER}@${STAGING_HOST}" \
+            "cd '${STAGING_PATH}' && git fetch --prune origin && git checkout main && git pull --ff-only origin main && docker compose -f compose.prod.yaml up -d --build && docker compose -f compose.prod.yaml exec -T api alembic upgrade head"

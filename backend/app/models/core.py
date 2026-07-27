@@ -144,6 +144,18 @@ class Character(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         lazy="selectin",
         order_by="CharacterCondition.name",
     )
+    class_levels: Mapped[list["CharacterClassLevel"]] = relationship(
+        back_populates="character",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="CharacterClassLevel.created_at",
+    )
+    spells: Mapped[list["CharacterSpell"]] = relationship(
+        back_populates="character",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="CharacterSpell.spell_level, CharacterSpell.name",
+    )
 
 
 class CharacterProficiency(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -210,6 +222,41 @@ class CharacterSpellSlot(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     character: Mapped[Character] = relationship(back_populates="spell_slots")
 
 
+class CharacterClassLevel(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "character_class_levels"
+    __table_args__ = (
+        UniqueConstraint("character_id", "class_id"),
+        CheckConstraint("level BETWEEN 1 AND 20", name="level_range"),
+    )
+
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
+    )
+    class_id: Mapped[str] = mapped_column(String(30))
+    level: Mapped[int] = mapped_column(Integer)
+    subclass_id: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    character: Mapped[Character] = relationship(back_populates="class_levels")
+
+
+class CharacterSpell(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "character_spells"
+    __table_args__ = (
+        UniqueConstraint("character_id", "name"),
+        CheckConstraint("spell_level BETWEEN 0 AND 9", name="spell_level_range"),
+    )
+
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
+    )
+    name: Mapped[str] = mapped_column(String(160))
+    spell_level: Mapped[int] = mapped_column(Integer)
+    is_known: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_prepared: Mapped[bool] = mapped_column(Boolean, default=False)
+    in_spellbook: Mapped[bool] = mapped_column(Boolean, default=False)
+    source_class_id: Mapped[str] = mapped_column(String(30))
+    character: Mapped[Character] = relationship(back_populates="spells")
+
+
 class CharacterCondition(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     __tablename__ = "character_conditions"
 
@@ -229,6 +276,21 @@ class LongRestEvent(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     campaign_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("campaigns.id", ondelete="CASCADE"), index=True
     )
+    character_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
+    )
+    actor_user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id")
+    )
+    idempotency_key: Mapped[str] = mapped_column(String(120))
+    request_hash: Mapped[str] = mapped_column(String(64))
+    result_data: Mapped[dict[str, Any]] = mapped_column(JSON)
+
+
+class LevelUpEvent(UUIDPrimaryKeyMixin, TimestampMixin, Base):
+    __tablename__ = "level_up_events"
+    __table_args__ = (UniqueConstraint("character_id", "idempotency_key"),)
+
     character_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("characters.id", ondelete="CASCADE"), index=True
     )

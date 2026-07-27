@@ -88,7 +88,7 @@ Até definição comercial, o código usa licença proprietária. Não publicar 
 
 ## D-020 — Imagens de infraestrutura reproduzíveis
 
-Serviços de infraestrutura usam imagens oficiais com versões fixas e existentes no registro público. O MinIO usa `minio/minio:RELEASE.2025-09-07T16-13-09Z`; mudanças de versão exigem validação do Compose de desenvolvimento e produção.
+Serviços de infraestrutura usam imagens oficiais com versões fixas e existentes no registro público. O MinIO usa `minio/minio:RELEASE.2025-09-07T16-13-09Z` e seu cliente é fixado pelo digest `sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727`; mudanças de versão exigem validação do Compose de desenvolvimento e produção.
 
 ## D-021 — Direção visual e plataformas
 
@@ -173,3 +173,44 @@ Nós e conexões secretas são removidos no servidor antes de formar grafos comp
 ## D-041 — Auditoria de dependências como gate
 
 A CI executa `pip-audit` no ambiente Python e `npm audit` no front-end. Vulnerabilidades altas ou críticas bloqueiam a publicação. Quando não existe correção dentro da faixa atual, uma atualização major ou substituição transitiva pode ser adotada de forma pontual, desde que lint, tipagem, testes e build de produção comprovem compatibilidade. Overrides devem usar versões exatas e permanecer documentados no lockfile.
+
+## D-042 — Progressão persistente e idempotente
+
+A ficha mantém níveis por classe, subclasse, magias e espaços de magia como
+estado canônico separado dos campos legados de apresentação. Toda subida é
+simulada pelo mesmo motor usado na aplicação, exige as escolhas pendentes,
+valida os requisitos de entrada e saída da multiclasse e só persiste com
+`Idempotency-Key`. Repetir chave e payload devolve o mesmo evento; reutilizar a
+chave com outro payload falha.
+
+## D-043 — Magia por modo de conjuração
+
+O motor diferencia magias conhecidas, preparadas, grimório, truques e magia de
+pacto. Limites e espaços seguem tabelas determinísticas do SRD 5.1 por classe e
+nível. Magias cadastradas pelo usuário guardam apenas metadados mecânicos e
+origem da classe; texto protegido não é copiado para o catálogo público.
+
+## D-044 — Observabilidade sem conteúdo privado
+
+Logs operacionais são JSON correlacionado por `X-Request-ID` e registram método,
+rota normalizada, status e latência, nunca corpos, tokens, e-mails ou notas.
+Métricas agregadas usam formato Prometheus e token próprio. Rate limit usa Redis
+com fallback local; limite de borda continua obrigatório contra abuso
+distribuído.
+
+## D-045 — Exclusão por pseudonimização mínima
+
+Exclusão de conta remove sessões, tokens temporários, notas, mídias, personagens
+e participações; campanhas próprias são arquivadas. A identidade é
+pseudonimizada porque auditoria e propriedade histórica possuem integridade
+referencial e podem ser retidas por segurança e exercício regular de direitos.
+Eventos com mais de 730 dias são revisados antes do descarte, nunca apagados
+automaticamente.
+
+## D-046 — Promoção imutável e restauração testada
+
+Homologação e produção promovem o mesmo commit por workflow manual protegido.
+Chaves SSH validam a chave do host. Backups incluem PostgreSQL, objetos e
+checksums, são copiados para destino externo e a restauração é testada
+periodicamente em ambiente isolado. Sem evidência externa, o lançamento
+comercial permanece bloqueado.

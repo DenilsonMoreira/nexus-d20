@@ -163,3 +163,26 @@ Todas as rotas de escrita abaixo exigem papel `master` na campanha:
 `GET /api/v1/presentations/{layout_id}` aceita somente layouts com visibilidade
 `presentation` e devolve cards já sanitizados. Campos secretos não integram o
 payload HTTP.
+
+## Progressão e magias
+
+- `GET /api/v1/characters/{character_id}/progression` — níveis por classe,
+  magias e espaços persistidos;
+- `POST /api/v1/characters/{character_id}/level-up/simulate` — compõe PV,
+  atributo, subclasse, multiclasse e perfil de conjuração sem mutação;
+- `POST /api/v1/characters/{character_id}/level-up/apply` — exige
+  `Idempotency-Key`, plano sem escolhas pendentes e grava auditoria.
+
+Fichas criadas antes da migração informam `base_class_id` na primeira simulação.
+Depois da primeira aplicação, os níveis por classe tornam-se canônicos.
+
+## Privacidade e operação
+
+- `GET /api/v1/account/export` — exportação JSON autenticada;
+- `DELETE /api/v1/account` — exige `{"confirmation":"EXCLUIR"}`, revoga a
+  conta e aplica a política de pseudonimização;
+- `GET /health` — liveness sem dados sensíveis;
+- `GET /metrics` — formato Prometheus, protegido por bearer token em produção.
+
+Respostas recebem `X-Request-ID` e headers de segurança. Excesso de requisições
+retorna `429`, `Retry-After` e os headers `X-RateLimit-*`.

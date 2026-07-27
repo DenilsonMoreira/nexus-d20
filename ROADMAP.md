@@ -41,7 +41,7 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 3 — Progressão e magias
 
-**Status:** em andamento desde 26 de julho de 2026.
+**Status:** concluída em 27 de julho de 2026.
 
 - Motor de progressão D&D 5e 2014.
 - Assistente de subida de nível.
@@ -134,6 +134,10 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 **Aceite:** dados secretos não são serializados para telas públicas.
 
 ## Fase 11 — Preparação comercial
+
+**Status:** implementação técnica concluída em 27 de julho de 2026; liberação
+comercial bloqueada até concluir as evidências externas de homologação listadas
+em `docs/DEPLOYMENT.md`.
 
 - Observabilidade, backups e restauração.
 - Rate limit, política de retenção e exportação de dados.

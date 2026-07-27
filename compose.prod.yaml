@@ -36,7 +36,7 @@ services:
       - minio_data:/data
 
   minio-init:
-    image: minio/mc:latest
+    image: minio/mc@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
     env_file: .env
     depends_on:
       - minio
@@ -53,6 +53,9 @@ services:
       target: production
     restart: unless-stopped
     env_file: .env
+    environment:
+      RATE_LIMIT_ENABLED: "true"
+      TRUST_PROXY_HEADERS: "true"
     command: ["fastapi", "run", "app/main.py", "--port", "8000", "--workers", "2"]
     depends_on:
       - db

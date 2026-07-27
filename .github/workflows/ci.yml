@@ -38,6 +38,7 @@ jobs:
           cache: pip
       - run: pip install -e '.[dev]'
       - run: pip-audit --skip-editable
+      - run: bandit -q -ll -r app
       - run: ruff check app tests
       - run: mypy app
       - run: alembic upgrade head

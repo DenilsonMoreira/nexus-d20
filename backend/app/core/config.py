@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     s3_secret_key: str = "nexus_minio_change_me"
     s3_region: str = "us-east-1"
     media_max_bytes: int = 10 * 1024 * 1024
+    rate_limit_enabled: bool = False
+    rate_limit_requests_per_minute: int = 120
+    auth_rate_limit_requests_per_minute: int = 10
+    trust_proxy_headers: bool = False
+    metrics_token: str = ""
+    audit_retention_days: int = 730
+    session_retention_days: int = 90
     cors_origins_raw: str = Field(default="http://localhost:3000", alias="CORS_ORIGINS")
 
     @property

@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { LevelUpAssistant } from "./LevelUpAssistant";
 import styles from "./CampaignWorkspace.module.css";
 
 type Item = {
@@ -138,6 +139,18 @@ export function CampaignWorkspace({
       </header>
 
       <div className={styles.grid}>
+        {characterId && (
+          <article className={styles.panel}>
+            <div className={styles.panelTitle}>
+              <div>
+                <span>Evolução</span>
+                <h3>Subir de nível</h3>
+              </div>
+              <b>03</b>
+            </div>
+            <LevelUpAssistant characterId={characterId} />
+          </article>
+        )}
         <article className={styles.panel}>
           <div className={styles.panelTitle}>
             <div>
