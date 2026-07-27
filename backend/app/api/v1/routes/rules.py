@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.domain.rules.attack import resolve_attack
+from app.domain.rules.class_progression import simulate_class_level_up
 from app.domain.rules.durability import durability_snapshot
 from app.domain.rules.encumbrance import calculate_encumbrance
 from app.domain.rules.progression import simulate_next_level
@@ -8,6 +9,8 @@ from app.domain.rules.rest import simulate_long_rest
 from app.schemas.rules import (
     AttackRequest,
     AttackResponse,
+    ClassProgressionSimulationRequest,
+    ClassProgressionSimulationResponse,
     DurabilityPreviewRequest,
     DurabilitySnapshotResponse,
     EncumbranceRequest,
@@ -50,4 +53,16 @@ def progression(
 ) -> ProgressionSimulationResponse:
     return ProgressionSimulationResponse.model_validate(
         simulate_next_level(**payload.model_dump())
+    )
+
+
+@router.post(
+    "/progression/classes/simulate",
+    response_model=ClassProgressionSimulationResponse,
+)
+def class_progression(
+    payload: ClassProgressionSimulationRequest,
+) -> ClassProgressionSimulationResponse:
+    return ClassProgressionSimulationResponse.model_validate(
+        simulate_class_level_up(**payload.model_dump())
     )

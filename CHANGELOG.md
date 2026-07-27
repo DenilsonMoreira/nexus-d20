@@ -36,3 +36,4 @@
 - Fase 2 concluída com ficha persistida, editável, auditada e protegida por campanha.
 - Fase 3 iniciada com tabela determinística de XP e bônus de proficiência do SRD 5.1.
 - Simulação pura do próximo nível, com elegibilidade por XP, suporte a avanço por marco e limite no nível 20.
+- Fundação de progressão das doze classes SRD com dados de vida, ganho de PV e escolhas pendentes de aumento de atributo.

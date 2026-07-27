@@ -129,3 +129,7 @@ Proficiências da ficha são registros declarativos categorizados como salvaguar
 ## D-030 — Base determinística de progressão
 
 Os limiares de experiência e o bônus de proficiência seguem a tabela de avanço do SRD 5.1 e usam o nível total do personagem. A simulação avalia somente o próximo nível, nunca altera a ficha e mantém efeitos específicos de classe, pontos de vida, magias e multiclasse fora desta fundação. Quando pontos de experiência não são informados, a qualificação retorna `not_evaluated`, preservando campanhas que adotam avanço por marco sem presumir sua política.
+
+## D-031 — Fundação da progressão por classe
+
+A primeira camada de progressão por classe cobre as doze classes do SRD 5.1 apenas para dado de vida, valor fixo de PV, rolagem informada pelo usuário e níveis que concedem aumento de atributo. O motor nunca realiza uma rolagem aleatória e aplica ganho mínimo de 1 PV após o modificador de Constituição. A ausência do método de PV e os níveis de aumento de atributo são devolvidos como escolhas pendentes. O resultado não representa uma subida completa: características, subclasses, magias e multiclasse permanecem explicitamente fora deste recorte e devem ser compostos antes da aplicação persistente.

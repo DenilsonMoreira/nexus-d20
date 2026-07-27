@@ -3,6 +3,13 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.domain.rules.class_progression import (
+    ClassId,
+    HitPointMethod,
+    RequiredChoice,
+    validate_hit_point_choice,
+)
+
 
 class AttackRequest(BaseModel):
     natural_roll: int = Field(ge=1, le=20)
@@ -121,3 +128,34 @@ class ProgressionSimulationResponse(BaseModel):
         "not_evaluated",
         "level_cap",
     ]
+
+
+class ClassProgressionSimulationRequest(BaseModel):
+    class_id: ClassId
+    current_class_level: int = Field(ge=1, le=20)
+    constitution_modifier: int = Field(ge=-10, le=10)
+    hit_point_method: HitPointMethod | None = None
+    hit_die_roll: int | None = None
+
+    def model_post_init(self, __context: object) -> None:
+        validate_hit_point_choice(
+            class_id=self.class_id,
+            hit_point_method=self.hit_point_method,
+            hit_die_roll=self.hit_die_roll,
+        )
+
+
+class ClassProgressionSimulationResponse(BaseModel):
+    class_id: ClassId
+    class_label: str
+    current_class_level: int
+    next_class_level: int | None
+    hit_die_sides: int
+    fixed_hit_point_value: int
+    hit_point_method: HitPointMethod | None
+    hit_die_roll: int | None
+    constitution_modifier: int
+    hit_point_gain: int | None
+    ability_score_improvement_required: bool
+    required_choices: list[RequiredChoice]
+    class_level_cap: bool

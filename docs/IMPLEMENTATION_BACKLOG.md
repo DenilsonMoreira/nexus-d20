@@ -38,6 +38,8 @@ Cada item deve resultar em PR independente ou em um conjunto pequeno e coerente.
    - [x] tabela de XP e bônus de proficiência do SRD 5.1;
    - [x] simulação pura do próximo nível;
    - [ ] progressão e escolhas por classe;
+     - [x] dados de vida, PV e níveis de aumento de atributo das doze classes SRD;
+     - [ ] características, subclasses e demais escolhas de cada nível;
    - [ ] aplicação idempotente e auditada;
    - [ ] magias, slots e multiclasse.
 

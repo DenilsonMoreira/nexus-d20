@@ -56,6 +56,27 @@ O simulador:
 
 Efeitos de classe, PV, escolhas, magias e multiclasse serão compostos em etapas posteriores antes de existir uma operação de aplicação.
 
+### 3.1. Progressão por classe
+
+As doze classes SRD possuem uma definição determinística de dado de vida, valor fixo de PV e níveis de aumento de atributo:
+
+| Classes | Dado de vida | Valor fixo |
+|---|---:|---:|
+| Bárbaro | d12 | 7 |
+| Guerreiro, Paladino, Patrulheiro | d10 | 6 |
+| Bardo, Clérigo, Druida, Monge, Ladino, Bruxo | d8 | 5 |
+| Feiticeiro, Mago | d6 | 4 |
+
+O ganho de PV em níveis posteriores é:
+
+```text
+ganho = máximo(1, valor fixo ou rolagem informada + modificador de Constituição)
+```
+
+O motor não rola dados. Sem método de PV, devolve `hit_points` como escolha pendente. O aumento de atributo é pendente nos níveis 4, 8, 12, 16 e 19 para a maioria das classes; Guerreiro também recebe nos níveis 6 e 14, e Ladino no nível 10.
+
+Esta camada não enumera nem aplica características, subclasses ou magias. Sua resposta é parcial por definição e precisa ser composta com essas regras antes da aplicação da subida de nível.
+
 ## 4. Ataque
 
 ```text
