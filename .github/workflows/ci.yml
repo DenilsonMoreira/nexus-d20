@@ -11,6 +11,22 @@ permissions:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.4-alpine
+        env:
+          POSTGRES_DB: nexus_d20_test
+          POSTGRES_USER: nexus
+          POSTGRES_PASSWORD: nexus_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U nexus -d nexus_d20_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://nexus:nexus_ci_password@localhost:5432/nexus_d20_test
     defaults:
       run:
         working-directory: backend
@@ -23,6 +39,7 @@ jobs:
       - run: pip install -e '.[dev]'
       - run: ruff check app tests
       - run: mypy app
+      - run: alembic upgrade head
       - run: pytest
 
   frontend:
