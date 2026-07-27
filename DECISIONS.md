@@ -133,3 +133,7 @@ Os limiares de experiência e o bônus de proficiência seguem a tabela de avan�
 ## D-031 — Fundação da progressão por classe
 
 A primeira camada de progressão por classe cobre as doze classes do SRD 5.1 apenas para dado de vida, valor fixo de PV, rolagem informada pelo usuário e níveis que concedem aumento de atributo. O motor nunca realiza uma rolagem aleatória e aplica ganho mínimo de 1 PV após o modificador de Constituição. A ausência do método de PV e os níveis de aumento de atributo são devolvidos como escolhas pendentes. O resultado não representa uma subida completa: características, subclasses, magias e multiclasse permanecem explicitamente fora deste recorte e devem ser compostos antes da aplicação persistente.
+
+## D-032 — Simulação de aumento de atributos
+
+O aumento de atributos de 2014 aceita exatamente `+2` em um atributo ou `+1` em dois atributos diferentes e não eleva uma pontuação acima de 20. A simulação devolve pontuações e modificadores antes/depois. Quando Constituição muda de faixa de modificador, o ajuste do máximo de PV é a diferença do modificador multiplicada pelo nível total resultante, contemplando retroativamente todos os níveis alcançados. Talentos e aplicação persistente não integram esta camada.

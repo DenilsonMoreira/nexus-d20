@@ -77,6 +77,23 @@ O motor não rola dados. Sem método de PV, devolve `hit_points` como escolha pe
 
 Esta camada não enumera nem aplica características, subclasses ou magias. Sua resposta é parcial por definição e precisa ser composta com essas regras antes da aplicação da subida de nível.
 
+### 3.2. Aumento de atributos
+
+Quando uma característica de classe concede aumento de atributos, a escolha válida é:
+
+- um atributo recebe `+2`; ou
+- dois atributos diferentes recebem `+1` cada.
+
+Esse aumento não pode elevar uma pontuação acima de 20. O simulador devolve pontuações e modificadores antes/depois sem persistência.
+
+Se o modificador de Constituição mudar:
+
+```text
+ajuste_PV_máximo = diferença_do_modificador × nível_total_resultante
+```
+
+Assim, a mudança considera todos os níveis já alcançados, inclusive o novo. Talentos são uma regra opcional separada e não fazem parte desta simulação.
+
 ## 4. Ataque
 
 ```text

@@ -1,8 +1,13 @@
 from decimal import Decimal
-from typing import Literal
+from typing import Literal, cast
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
+from app.domain.rules.ability_score_progression import (
+    AbilityName,
+    AbilityScoreMap,
+    validate_ability_score_improvement,
+)
 from app.domain.rules.class_progression import (
     ClassId,
     HitPointMethod,
@@ -159,3 +164,49 @@ class ClassProgressionSimulationResponse(BaseModel):
     ability_score_improvement_required: bool
     required_choices: list[RequiredChoice]
     class_level_cap: bool
+
+
+class AbilityScoreValues(BaseModel):
+    strength: int = Field(ge=1, le=30)
+    dexterity: int = Field(ge=1, le=30)
+    constitution: int = Field(ge=1, le=30)
+    intelligence: int = Field(ge=1, le=30)
+    wisdom: int = Field(ge=1, le=30)
+    charisma: int = Field(ge=1, le=30)
+
+
+class AbilityModifierValues(BaseModel):
+    strength: int
+    dexterity: int
+    constitution: int
+    intelligence: int
+    wisdom: int
+    charisma: int
+
+
+class AbilityScoreImprovementSimulationRequest(BaseModel):
+    current_scores: AbilityScoreValues
+    increases: dict[AbilityName, Literal[1, 2]]
+    resulting_character_level: int = Field(ge=1, le=20)
+
+    @model_validator(mode="after")
+    def validate_increases(self) -> "AbilityScoreImprovementSimulationRequest":
+        validate_ability_score_improvement(
+            current_scores=cast(
+                AbilityScoreMap,
+                self.current_scores.model_dump(),
+            ),
+            increases=cast(dict[AbilityName, int], self.increases),
+        )
+        return self
+
+
+class AbilityScoreImprovementSimulationResponse(BaseModel):
+    resulting_character_level: int
+    before: AbilityScoreValues
+    after: AbilityScoreValues
+    increases: dict[AbilityName, int]
+    modifiers_before: AbilityModifierValues
+    modifiers_after: AbilityModifierValues
+    constitution_modifier_change: int
+    hit_point_maximum_adjustment: int
