@@ -19,7 +19,44 @@ floor((pontuação − 10) / 2)
 
 O gráfico usa as seis pontuações, mas sempre apresenta alternativa textual.
 
-## 3. Ataque
+## 3. Progressão
+
+A progressão base usa o nível total do personagem e a tabela do SRD 5.1:
+
+| Nível | XP mínimo | Proficiência |
+|---:|---:|---:|
+| 1 | 0 | +2 |
+| 2 | 300 | +2 |
+| 3 | 900 | +2 |
+| 4 | 2.700 | +2 |
+| 5 | 6.500 | +3 |
+| 6 | 14.000 | +3 |
+| 7 | 23.000 | +3 |
+| 8 | 34.000 | +3 |
+| 9 | 48.000 | +4 |
+| 10 | 64.000 | +4 |
+| 11 | 85.000 | +4 |
+| 12 | 100.000 | +4 |
+| 13 | 120.000 | +5 |
+| 14 | 140.000 | +5 |
+| 15 | 165.000 | +5 |
+| 16 | 195.000 | +5 |
+| 17 | 225.000 | +6 |
+| 18 | 265.000 | +6 |
+| 19 | 305.000 | +6 |
+| 20 | 355.000 | +6 |
+
+O simulador:
+
+- calcula o estado atual e o próximo nível sem persistência;
+- informa XP restante e maior nível alcançado pelo XP fornecido;
+- avalia um nível por vez, mesmo quando o XP permitir saltos maiores;
+- retorna `not_evaluated` sem XP, para não impor progressão por experiência a campanhas por marco;
+- retorna `level_cap` no nível 20.
+
+Efeitos de classe, PV, escolhas, magias e multiclasse serão compostos em etapas posteriores antes de existir uma operação de aplicação.
+
+## 4. Ataque
 
 ```text
 mod_atk = proficiência_se_aplicável + mod_atributo + bônus_arma + efeitos
@@ -41,7 +78,7 @@ Desgaste:
 
 Resultado exatamente igual à CA gera margem zero por padrão.
 
-## 4. Durabilidade
+## 5. Durabilidade
 
 ```text
 percentual = atual / máximo × 100
@@ -63,7 +100,7 @@ d12 → d10 → d8 → d6 → d4 → 1
 
 Em 25% ou menos, erro pode disparar teste de quebra. Em 10% ou menos, não funciona normalmente.
 
-## 5. Materiais
+## 6. Materiais
 
 Bases iniciais:
 
@@ -88,7 +125,7 @@ Bases iniciais:
 durabilidade = base_material × estrutura × qualidade × multiplicador_mágico
 ```
 
-## 6. Itens mágicos
+## 7. Itens mágicos
 
 - Piso automático de 50%.
 - Desgaste automático é limitado ao piso.
@@ -105,7 +142,7 @@ Multiplicadores sugeridos:
 - lendário 5;
 - artefato sem desgaste automático.
 
-## 7. Visibilidade
+## 8. Visibilidade
 
 Mestre sempre vê valores exatos. Jogador vê percentual se possuir profissão compatível com o domínio do item. Caso contrário, vê somente estado.
 
@@ -118,7 +155,7 @@ Exemplos de domínios:
 - tecelagem: roupas e tecidos;
 - arcano: estruturas mágicas, sem substituir o conhecimento artesanal material.
 
-## 8. Peso
+## 9. Peso
 
 Conversão interna exata da regra 2014:
 
@@ -136,7 +173,7 @@ Estados na variante:
 - acima de muito sobrecarregado: −6 m e penalidades da variante;
 - acima do máximo: não carrega normalmente.
 
-## 9. Viagem
+## 10. Viagem
 
 Interface simplificada:
 
@@ -154,7 +191,7 @@ CD = 10 + horas além de 8
 
 Falha causa um nível de exaustão.
 
-## 10. Fadiga oculta
+## 11. Fadiga oculta
 
 Módulo homebrew opcional de 0 a 3 pontos. Ao atingir 3, converte em um nível de exaustão e consome 3 pontos.
 
@@ -164,7 +201,7 @@ CD = 8 + ritmo + carga + terreno + clima + recursos + condições − mitigadore
 
 Jogador pode receber somente sintomas narrativos.
 
-## 11. Descanso longo
+## 12. Descanso longo
 
 Simulação calcula:
 
@@ -180,7 +217,7 @@ Simulação calcula:
 
 A aplicação exige token idempotente.
 
-## 12. Preços
+## 13. Preços
 
 ```text
 preço_final = base × região × raridade × qualidade × reputação
@@ -188,7 +225,7 @@ preço_final = base × região × raridade × qualidade × reputação
 
 Moedas usam Decimal e conversão configurável.
 
-## 13. Overrides
+## 14. Overrides
 
 Prioridade:
 

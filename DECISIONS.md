@@ -125,3 +125,7 @@ Cada personagem pertence a uma campanha e possui um usuário responsável que de
 ## D-029 — Proficiências e recursos declarativos
 
 Proficiências da ficha são registros declarativos categorizados como salvaguarda, perícia, idioma, ferramenta, arma, armadura ou outra; esta fase não infere bônus nem concede proficiências automaticamente. Recursos possuem nome, valor atual, máximo e gatilho informativo de recuperação por descanso curto, descanso longo ou ação manual. Quantidades e recuperação efetiva continuam sob responsabilidade do motor de progressão e descanso nas fases correspondentes. As coleções pertencem ao personagem, seguem as mesmas permissões e integram os snapshots reversíveis de auditoria.
+
+## D-030 — Base determinística de progressão
+
+Os limiares de experiência e o bônus de proficiência seguem a tabela de avanço do SRD 5.1 e usam o nível total do personagem. A simulação avalia somente o próximo nível, nunca altera a ficha e mantém efeitos específicos de classe, pontos de vida, magias e multiclasse fora desta fundação. Quando pontos de experiência não são informados, a qualificação retorna `not_evaluated`, preservando campanhas que adotam avanço por marco sem presumir sua política.

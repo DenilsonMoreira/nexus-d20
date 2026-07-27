@@ -16,6 +16,10 @@ O código do projeto é proprietário até decisão comercial posterior.
 
 Antes de publicar, incluir atribuição final conforme exigências da Creative Commons e revisão jurídica.
 
+## Fontes registradas
+
+- Tabela de avanço por experiência e bônus de proficiência: SRD 5.1, níveis 1 a 20. A implementação contém apenas os valores mecânicos necessários ao cálculo; a atribuição final deve seguir a licença autorizada adotada para o conteúdo SRD.
+
 ## Marcas
 
 Evitar sugerir afiliação oficial com Wizards of the Coast. Nome e identidade visual do produto devem ser próprios.

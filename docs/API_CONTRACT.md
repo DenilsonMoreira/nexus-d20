@@ -61,6 +61,9 @@ As listas enviadas em um `PATCH` substituem integralmente a respectiva coleção
 - `POST /rules/durability/preview`
 - `POST /rules/encumbrance/calculate`
 - `POST /rules/long-rest/simulate`
+- `POST /rules/progression/simulate`
+
+`POST /rules/progression/simulate` recebe `current_level` e `experience_points` opcional. A resposta descreve o nível atual, o próximo nível, limiares de XP, bônus de proficiência, XP restante e qualificação. A operação avalia somente o próximo nível e não persiste mudanças. Sem XP, a qualificação é `not_evaluated`; no nível 20, é `level_cap`.
 
 ## Convenções
 

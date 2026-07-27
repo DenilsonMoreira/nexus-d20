@@ -34,3 +34,5 @@
 - Proficiências categorizadas e recursos de classe persistidos como coleções da ficha.
 - Editor e painel responsivos para proficiências, valores atuais, máximos e gatilhos de recuperação.
 - Fase 2 concluída com ficha persistida, editável, auditada e protegida por campanha.
+- Fase 3 iniciada com tabela determinística de XP e bônus de proficiência do SRD 5.1.
+- Simulação pura do próximo nível, com elegibilidade por XP, suporte a avanço por marco e limite no nível 20.

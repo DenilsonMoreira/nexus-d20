@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.domain.rules.attack import resolve_attack
 from app.domain.rules.durability import durability_snapshot
 from app.domain.rules.encumbrance import calculate_encumbrance
+from app.domain.rules.progression import simulate_next_level
 from app.domain.rules.rest import simulate_long_rest
 from app.schemas.rules import (
     AttackRequest,
@@ -13,6 +14,8 @@ from app.schemas.rules import (
     EncumbranceResponse,
     LongRestRequest,
     LongRestResponse,
+    ProgressionSimulationRequest,
+    ProgressionSimulationResponse,
 )
 
 router = APIRouter()
@@ -36,3 +39,15 @@ def encumbrance(payload: EncumbranceRequest) -> EncumbranceResponse:
 @router.post("/long-rest/simulate", response_model=LongRestResponse)
 def long_rest(payload: LongRestRequest) -> LongRestResponse:
     return LongRestResponse.model_validate(simulate_long_rest(payload.model_dump()))
+
+
+@router.post(
+    "/progression/simulate",
+    response_model=ProgressionSimulationResponse,
+)
+def progression(
+    payload: ProgressionSimulationRequest,
+) -> ProgressionSimulationResponse:
+    return ProgressionSimulationResponse.model_validate(
+        simulate_next_level(**payload.model_dump())
+    )

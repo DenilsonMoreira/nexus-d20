@@ -41,6 +41,8 @@ O produto será construído em fatias verticais. Cada fase deve produzir algo ut
 
 ## Fase 3 — Progressão e magias
 
+**Status:** em andamento desde 26 de julho de 2026.
+
 - Motor de progressão D&D 5e 2014.
 - Assistente de subida de nível.
 - Conhecidas, preparadas, grimório, truques e slots.

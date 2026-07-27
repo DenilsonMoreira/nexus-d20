@@ -96,3 +96,28 @@ class LongRestResponse(BaseModel):
     hidden_fatigue_after: int
     magic_items: list[dict[str, object]]
     warnings: list[str]
+
+
+class ProgressionSimulationRequest(BaseModel):
+    current_level: int = Field(ge=1, le=20)
+    experience_points: int | None = Field(default=None, ge=0)
+
+
+class ProgressionSnapshotResponse(BaseModel):
+    level: int
+    experience_threshold: int
+    proficiency_bonus: int
+
+
+class ProgressionSimulationResponse(BaseModel):
+    current: ProgressionSnapshotResponse
+    next: ProgressionSnapshotResponse | None
+    experience_points: int | None
+    highest_level_by_experience: int | None
+    experience_remaining: int | None
+    qualification: Literal[
+        "eligible",
+        "insufficient_experience",
+        "not_evaluated",
+        "level_cap",
+    ]

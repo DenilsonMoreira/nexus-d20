@@ -34,30 +34,37 @@ Cada item deve resultar em PR independente ou em um conjunto pequeno e coerente.
    - [x] edição completa da ficha na interface;
    - [x] proficiências e recursos.
 
-5. **Profissões e visibilidade**
+5. **Progressão e magias** — em andamento
+   - [x] tabela de XP e bônus de proficiência do SRD 5.1;
+   - [x] simulação pura do próximo nível;
+   - [ ] progressão e escolhas por classe;
+   - [ ] aplicação idempotente e auditada;
+   - [ ] magias, slots e multiclasse.
+
+6. **Profissões e visibilidade**
    - domínios artesanais;
    - política de durabilidade detalhada.
 
-6. **Catálogo de materiais e itens**
+7. **Catálogo de materiais e itens**
    - templates, versões, cópias e instâncias;
    - seed próprio sem conteúdo proibido.
 
-7. **Ataques persistidos**
+8. **Ataques persistidos**
    - seleção de alvo e arma;
    - evento de desgaste;
    - aplicação e auditoria.
 
-8. **Notas protegidas**
+9. **Notas protegidas**
    - CRUD do autor;
    - compartilhamento;
    - testes negativos para mestre.
 
-9. **Armazenamento de imagens**
+10. **Armazenamento de imagens**
    - upload validado;
    - URL assinada;
    - remoção segura.
 
-10. **Descanso de grupo**
+11. **Descanso de grupo**
     - simulação e aplicação idempotente;
     - itens mágicos, slots, PV, recursos e condições.
 
