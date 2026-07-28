@@ -1,0 +1,144 @@
+.page {
+  min-height: 100vh;
+  padding: clamp(1rem, 4vw, 3.5rem);
+  color: #ded2bf;
+  background:
+    radial-gradient(circle at 50% 0, rgba(132, 88, 36, 0.18), transparent 34%),
+    #080a0a;
+}
+
+.page > header {
+  max-width: 1040px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto 2rem;
+}
+
+.brand {
+  color: #d8b57b;
+  font: 1.4rem Georgia, "Times New Roman", serif;
+}
+
+.page > header button,
+.tabs button {
+  border: 1px solid #403529;
+  border-radius: 0.35rem;
+  background: transparent;
+  color: #9d9181;
+  padding: 0.65rem 0.9rem;
+  cursor: pointer;
+}
+
+.card {
+  max-width: 1040px;
+  margin: auto;
+  border: 1px solid #3b2f22;
+  border-radius: 0.7rem;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  background: linear-gradient(145deg, rgba(18, 21, 20, 0.98), rgba(9, 11, 11, 0.98));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+.intro > span {
+  color: #a87c43;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  max-width: 720px;
+  margin: 0.55rem 0;
+  color: #ead7b5;
+  font: 400 clamp(2rem, 4vw, 3.6rem)/1.05 Georgia, "Times New Roman", serif;
+}
+
+.intro p {
+  color: #948979;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.6rem;
+  margin: 2rem 0 1.4rem;
+}
+
+.tabs button[aria-pressed="true"] {
+  border-color: #9d7137;
+  color: #e0bd84;
+  background: #2a1e12;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.form label,
+.abilities label {
+  display: grid;
+  gap: 0.4rem;
+  color: #b7a58b;
+  font-size: 0.78rem;
+}
+
+.form input,
+.form select {
+  min-width: 0;
+  border: 1px solid #403528;
+  border-radius: 0.35rem;
+  background: #0c0f0f;
+  color: #eadfcd;
+  padding: 0.75rem;
+}
+
+.wide,
+.abilities,
+.primary,
+.error,
+.observer {
+  grid-column: 1 / -1;
+}
+
+.abilities {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.6rem;
+  margin: 0;
+  border: 1px solid #342a20;
+  padding: 1rem;
+}
+
+.abilities legend {
+  color: #b98d50;
+  padding: 0 0.4rem;
+}
+
+.primary {
+  border: 1px solid #9b7137;
+  border-radius: 0.35rem;
+  background: linear-gradient(180deg, #4b351e, #261b11);
+  color: #efd09a;
+  padding: 0.95rem;
+  cursor: pointer;
+}
+
+.error {
+  margin: 0;
+  border-left: 2px solid #a84242;
+  color: #dfa5a5;
+  padding: 0.7rem;
+}
+
+.observer {
+  color: #9e9384;
+}
+
+@media (max-width: 760px) {
+  .form,
+  .abilities {
+    grid-template-columns: 1fr;
+  }
+}

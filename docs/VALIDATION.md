@@ -1,4 +1,29 @@
-# Relatório de validação da fundação
+# Relatório de validação
+
+## Versão 1.0.1 — 28 de julho de 2026
+
+### Jornadas verificadas no navegador
+
+- Cadastro, sessão persistida, logout e novo login.
+- Criação de campanha e primeira ficha por um mestre.
+- Edição persistida e auditada de atributos da ficha.
+- Geração de convite de jogador pelo mestre.
+- Cadastro de um segundo usuário, aceite do convite e criação da própria ficha.
+- Edição da ficha pelo jogador sem exposição da Central do Mestre.
+- Retorno do mestre, listagem dos participantes e troca para a ficha do jogador.
+- Swagger em `http://localhost:8200/docs`, com OpenAPI e rotas renderizados.
+- Layout desktop e breakpoint móvel 390×844, incluindo editor e navegação inferior.
+
+### Regressão automatizada
+
+- Frontend: ESLint, TypeScript, Vitest e build de produção.
+- Backend: Ruff, Mypy e suíte completa de Pytest.
+- Segurança: auditorias npm e Python.
+- Infraestrutura: validação do Docker Compose e health checks.
+
+---
+
+# Validação da fundação
 
 Data: 18 de julho de 2026.
 

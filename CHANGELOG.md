@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.1 — 2026-07-28
+
+- Tela responsiva de cadastro e login, sessão persistida e logout.
+- Onboarding para criação de campanha, entrada por convite e criação de personagem.
+- Remoção da ficha de demonstração usada como fallback para falhas reais da API.
+- Edição persistida e auditada da ficha pelo jogador e pelo mestre.
+- Gestão de participantes e geração de convites na área do mestre.
+- Seletor de personagens para o mestre alternar entre as fichas da campanha.
+- Ferramentas exclusivas do mestre ocultas na jornada do jogador.
+- Swagger corrigido sem relaxar a política de conteúdo das demais rotas.
+- Metadata de viewport explícita e validação em desktop e 390×844.
+- Testes de regressão para sessão, erros da API, onboarding, convites e múltiplas fichas.
+
 ## 0.1.0 — 2026-07-18
 
 - Fundação Docker do monorepo.

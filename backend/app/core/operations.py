@@ -114,9 +114,18 @@ class OperationsMiddleware(BaseHTTPMiddleware):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; frame-ancestors 'none'; object-src 'none'"
-        )
+        if path in {"/docs", "/docs/oauth2-redirect", "/redoc"}:
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+                "img-src 'self' data: https://fastapi.tiangolo.com; "
+                "frame-ancestors 'none'; object-src 'none'"
+            )
+        else:
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; frame-ancestors 'none'; object-src 'none'"
+            )
         if settings.secure_cookies:
             response.headers["Strict-Transport-Security"] = (
                 "max-age=31536000; includeSubDomains"

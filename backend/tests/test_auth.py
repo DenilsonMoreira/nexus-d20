@@ -38,6 +38,10 @@ async def test_register_refresh_rotation_and_logout() -> None:
             assert register.cookies["access_token"]
             original_refresh = register.cookies["refresh_token"]
 
+            current_user = await client.get("/api/v1/auth/me")
+            assert current_user.status_code == 200
+            assert current_user.json()["email"] == email
+
             duplicate = await client.post(
                 "/api/v1/auth/register",
                 json={
@@ -62,6 +66,7 @@ async def test_register_refresh_rotation_and_logout() -> None:
 
             logout = await client.post("/api/v1/auth/logout")
             assert logout.status_code == 204
+            assert (await client.get("/api/v1/auth/me")).status_code == 401
     finally:
         async with SessionLocal() as db:
             user_id = await db.scalar(select(User.id).where(User.email == email))

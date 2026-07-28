@@ -69,7 +69,8 @@
 
 .itemList,
 .noteList,
-.groupList {
+.groupList,
+.memberList {
   display: grid;
   gap: 10px;
   margin: 16px 0 0;
@@ -85,7 +86,8 @@
 
 .itemList strong,
 .noteList strong,
-.groupList strong {
+.groupList strong,
+.memberList strong {
   color: #ddd2c1;
   font-size: 0.84rem;
 }
@@ -94,7 +96,8 @@
 .noteList small,
 .groupList small,
 .itemList span,
-.groupList span {
+.groupList span,
+.memberList small {
   display: block;
   color: #8f8578;
   font-size: 0.72rem;
@@ -163,6 +166,72 @@
 
 .groupList small {
   grid-column: 1 / -1;
+}
+
+.memberList {
+  max-height: 150px;
+  overflow: auto;
+}
+
+.memberList li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #28231e;
+}
+
+.memberList span {
+  color: #c9a36e;
+  font-size: 0.7rem;
+}
+
+.inviteForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.inviteForm input,
+.inviteForm select {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #352e26;
+  border-radius: 8px;
+  outline: none;
+  background: #11110f;
+  color: #e4d8c6;
+}
+
+.inviteForm button {
+  grid-column: 1 / -1;
+  padding: 9px;
+  border: 1px solid #765938;
+  border-radius: 8px;
+  background: #9f7742;
+  color: #160f08;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.inviteResult {
+  margin-bottom: 0;
+  color: #a99b88;
+  font-size: 0.72rem;
+}
+
+.inviteResult code {
+  display: block;
+  margin-top: 6px;
+  padding: 8px;
+  overflow-wrap: anywhere;
+  border: 1px solid #3b3024;
+  border-radius: 7px;
+  color: #e1be83;
+  background: #0b0c0b;
+  user-select: all;
 }
 
 .restButton {

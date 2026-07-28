@@ -2,56 +2,23 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AbilityRadar } from "@/components/AbilityRadar";
+import { AuthScreen } from "@/components/AuthScreen";
 import { CharacterEditor } from "@/components/CharacterEditor";
 import { CampaignWorkspace } from "@/components/CampaignWorkspace";
 import { MasterToolkit } from "@/components/MasterToolkit";
+import { Onboarding } from "@/components/Onboarding";
 import {
   type ActiveCharacter,
+  type Campaign,
   type Character,
-  loadActiveCharacter,
+  loadAccountWorkspace,
 } from "@/lib/characters";
+import {
+  currentUser,
+  logout as logoutAccount,
+  type AuthUser,
+} from "@/lib/auth";
 import styles from "./page.module.css";
-
-const demoCharacter: Character = {
-  id: "demo",
-  campaign_id: "demo",
-  owner_user_id: "demo",
-  name: "Nox Brasalume",
-  race_name: "Humano variante",
-  class_name: "Monge",
-  subclass_name: "",
-  level: 2,
-  background: "Forasteiro",
-  alignment: "Neutro",
-  hit_points_current: 17,
-  hit_points_max: 17,
-  temporary_hit_points: 0,
-  armor_class: 16,
-  initiative: 3,
-  speed_meters: 9,
-  abilities: [
-    { code: "charisma", label: "CARISMA", score: 8, modifier: -1 },
-    { code: "intelligence", label: "INTELIGÊNCIA", score: 10, modifier: 0 },
-    { code: "wisdom", label: "SABEDORIA", score: 15, modifier: 2 },
-    { code: "strength", label: "FORÇA", score: 12, modifier: 1 },
-    { code: "dexterity", label: "DESTREZA", score: 16, modifier: 3 },
-    { code: "constitution", label: "CONSTITUIÇÃO", score: 14, modifier: 2 },
-  ],
-  proficiencies: [
-    { category: "skill", name: "Acrobacia" },
-    { category: "skill", name: "Furtividade" },
-    { category: "language", name: "Comum" },
-    { category: "weapon", name: "Armas simples" },
-  ],
-  resources: [
-    {
-      name: "Ki",
-      current_value: 2,
-      maximum_value: 2,
-      recovery: "short_rest",
-    },
-  ],
-};
 
 function formatModifier(value: number) {
   return value >= 0 ? `+${value}` : String(value);
@@ -83,7 +50,11 @@ const recoveryLabels: Record<string, string> = {
 };
 
 export default function Home() {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [active, setActive] = useState<ActiveCharacter | null>(null);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [availableCharacters, setAvailableCharacters] = useState<Character[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [message, setMessage] = useState(
@@ -93,10 +64,12 @@ export default function Home() {
   const loadCharacter = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await loadActiveCharacter();
-      setActive(result);
+      const workspace = await loadAccountWorkspace();
+      setCampaigns(workspace.campaigns);
+      setActive(workspace.active);
+      setAvailableCharacters(workspace.characters);
       setMessage(
-        result
+        workspace.active
           ? "Ficha sincronizada com a campanha"
           : "Nenhuma ficha disponível nesta conta",
       );
@@ -119,35 +92,83 @@ export default function Home() {
 
   useEffect(() => {
     let cancelled = false;
-    void loadActiveCharacter()
-      .then((result) => {
-        if (cancelled) return;
-        setActive(result);
-        setMessage(
-          result
-            ? "Ficha sincronizada com a campanha"
-            : "Nenhuma ficha disponível nesta conta",
-        );
+    void currentUser()
+      .then((authenticatedUser) => {
+        if (!cancelled) {
+          setUser(authenticatedUser);
+          void loadCharacter();
+        }
       })
       .catch(() => {
-        if (cancelled) return;
-        setActive(null);
-        setMessage("Prévia visual — entre para carregar sua ficha");
+        if (!cancelled) setUser(null);
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setAuthLoading(false);
       });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [loadCharacter]);
 
-  const character = active?.character ?? demoCharacter;
+  function handleAuthenticated(authenticatedUser: AuthUser) {
+    setUser(authenticatedUser);
+    void loadCharacter();
+  }
+
+  async function handleLogout() {
+    try {
+      await logoutAccount();
+    } finally {
+      setUser(null);
+      setActive(null);
+      setAvailableCharacters([]);
+      setCampaigns([]);
+      setAvailableCharacters([]);
+      setEditing(false);
+    }
+  }
+
+  if (authLoading) {
+    return (
+      <main className={styles.sessionLoading}>
+        <span aria-hidden="true">◇</span>
+        <strong>Nexus d20</strong>
+        <small>Verificando sua sessão…</small>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return <AuthScreen onAuthenticated={handleAuthenticated} />;
+  }
+
+  if (!loading && !active) {
+    return (
+      <Onboarding
+        displayName={user.display_name}
+        campaigns={campaigns}
+        onReady={loadCharacter}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  if (!active) {
+    return (
+      <main className={styles.sessionLoading}>
+        <span aria-hidden="true">◇</span>
+        <strong>Nexus d20</strong>
+        <small>Carregando sua campanha…</small>
+      </main>
+    );
+  }
+
+  const character = active.character;
   const orderedAbilities = [...character.abilities].sort(
     (left, right) =>
       abilityOrder.indexOf(left.code) - abilityOrder.indexOf(right.code),
   );
-  const campaignName = active?.campaign.name ?? "As Sombras de Esteren";
+  const campaignName = active.campaign.name;
   const characterSubtitle = [
     character.class_name && `${character.class_name} ${character.level}`,
     character.race_name,
@@ -191,6 +212,31 @@ export default function Home() {
             <h1>{campaignName}</h1>
           </div>
           <div className={styles.headerActions}>
+            {availableCharacters.length > 1 && (
+              <label className={styles.characterSelector}>
+                <span>Personagem ativo</span>
+                <select
+                  aria-label="Personagem ativo"
+                  value={character.id}
+                  onChange={(event) => {
+                    const selected = availableCharacters.find(
+                      (candidate) => candidate.id === event.target.value,
+                    );
+                    if (selected) {
+                      setActive((current) =>
+                        current ? { ...current, character: selected } : current,
+                      );
+                    }
+                  }}
+                >
+                  {availableCharacters.map((candidate) => (
+                    <option key={candidate.id} value={candidate.id}>
+                      {candidate.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <button
               className={active ? styles.syncedStatus : styles.previewStatus}
               type="button"
@@ -207,6 +253,13 @@ export default function Home() {
               onClick={() => setEditing(true)}
             >
               Editar ficha
+            </button>
+            <button
+              className={styles.logoutButton}
+              type="button"
+              onClick={() => void handleLogout()}
+            >
+              Sair de {user.display_name}
             </button>
           </div>
         </header>
@@ -377,11 +430,13 @@ export default function Home() {
           characterId={active?.character.id}
           role={active?.campaign.role}
         />
-        <MasterToolkit
-          campaignId={active?.campaign.id}
-          characterId={active?.character.id}
-          role={active?.campaign.role}
-        />
+        {active.campaign.role === "master" && (
+          <MasterToolkit
+            campaignId={active.campaign.id}
+            characterId={active.character.id}
+            role={active.campaign.role}
+          />
+        )}
       </section>
 
       <nav className={styles.mobileNav} aria-label="Navegação móvel">

@@ -35,6 +35,19 @@ type DashboardCharacter = {
   active_items: { id: string; name: string }[];
 };
 
+type CampaignMember = {
+  user_id: string;
+  email: string;
+  display_name: string;
+  role: "master" | "player" | "observer";
+};
+
+type InviteResult = {
+  token: string;
+  role: "master" | "player" | "observer";
+  expires_at: string;
+};
+
 export function CampaignWorkspace({
   campaignId,
   characterId,
@@ -50,6 +63,10 @@ export function CampaignWorkspace({
   const [notice, setNotice] = useState("Recursos avançados disponíveis após entrar.");
   const [noteTitle, setNoteTitle] = useState("");
   const [restPreview, setRestPreview] = useState<string | null>(null);
+  const [members, setMembers] = useState<CampaignMember[]>([]);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<"player" | "observer">("player");
+  const [inviteToken, setInviteToken] = useState("");
 
   useEffect(() => {
     if (!campaignId || !characterId) return;
@@ -62,12 +79,18 @@ export function CampaignWorkspace({
             `/campaigns/${campaignId}/master-dashboard`,
           )
         : Promise.resolve({ characters: [] }),
+      role === "master"
+        ? apiFetch<{ items: CampaignMember[] }>(
+            `/campaigns/${campaignId}/members`,
+          )
+        : Promise.resolve({ items: [] }),
     ])
-      .then(([loadedItems, loadedNotes, dashboard]) => {
+      .then(([loadedItems, loadedNotes, dashboard, campaignMembers]) => {
         if (cancelled) return;
         setItems(loadedItems);
         setNotes(loadedNotes);
         setGroup(dashboard.characters);
+        setMembers(campaignMembers.items);
         setNotice("Inventário, notas e campanha sincronizados.");
       })
       .catch((error: unknown) => {
@@ -128,6 +151,33 @@ export function CampaignWorkspace({
     }
   }
 
+  async function createInvite(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!campaignId || !inviteEmail.trim()) return;
+    try {
+      const invite = await apiFetch<InviteResult>(
+        `/campaigns/${campaignId}/invites`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            email: inviteEmail.trim(),
+            role: inviteRole,
+          }),
+        },
+      );
+      setInviteToken(invite.token);
+      setNotice(
+        `Convite de ${inviteRole === "player" ? "jogador" : "observador"} gerado.`,
+      );
+    } catch (error) {
+      setNotice(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível gerar o convite.",
+      );
+    }
+  }
+
   return (
     <section className={styles.workspace} aria-label="Recursos da campanha">
       <header className={styles.heading}>
@@ -139,6 +189,69 @@ export function CampaignWorkspace({
       </header>
 
       <div className={styles.grid}>
+        <article className={styles.panel}>
+          <div className={styles.panelTitle}>
+            <div>
+              <span>Acesso</span>
+              <h3>Participantes</h3>
+            </div>
+            <b>{members.length || (role ? 1 : 0)}</b>
+          </div>
+          {role === "master" ? (
+            <>
+              <ul className={styles.memberList}>
+                {members.map((member) => (
+                  <li key={member.user_id}>
+                    <div>
+                      <strong>{member.display_name}</strong>
+                      <small>{member.email}</small>
+                    </div>
+                    <span>
+                      {member.role === "master"
+                        ? "Mestre"
+                        : member.role === "player"
+                          ? "Jogador"
+                          : "Observador"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <form className={styles.inviteForm} onSubmit={createInvite}>
+                <input
+                  aria-label="E-mail do convidado"
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(event) => setInviteEmail(event.target.value)}
+                  placeholder="jogador@exemplo.com"
+                  required
+                />
+                <select
+                  aria-label="Papel do convidado"
+                  value={inviteRole}
+                  onChange={(event) =>
+                    setInviteRole(event.target.value as "player" | "observer")
+                  }
+                >
+                  <option value="player">Jogador</option>
+                  <option value="observer">Observador</option>
+                </select>
+                <button type="submit">Gerar convite</button>
+              </form>
+              {inviteToken && (
+                <p className={styles.inviteResult}>
+                  Código de convite
+                  <code>{inviteToken}</code>
+                </p>
+              )}
+            </>
+          ) : (
+            <p className={styles.empty}>
+              {role === "observer"
+                ? "Observador: acesso somente para consulta."
+                : "Jogador: você pode visualizar e editar somente sua própria ficha."}
+            </p>
+          )}
+        </article>
         {characterId && (
           <article className={styles.panel}>
             <div className={styles.panelTitle}>

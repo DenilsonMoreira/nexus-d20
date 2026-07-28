@@ -4,6 +4,7 @@ from fastapi import APIRouter, BackgroundTasks, Cookie, Depends, Response, statu
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import CurrentUser
 from app.core.config import settings
 from app.core.database import get_session
 from app.core.errors import AppError
@@ -15,6 +16,7 @@ from app.schemas.auth import (
     PasswordResetConfirmRequest,
     PasswordResetRequest,
     RegisterRequest,
+    UserResponse,
 )
 from app.services.auth import (
     consume_refresh_token,
@@ -30,6 +32,11 @@ from app.services.password_reset import create_password_reset_token, reset_passw
 router = APIRouter()
 DatabaseSession = Annotated[AsyncSession, Depends(get_session)]
 RefreshCookie = Annotated[str | None, Cookie()]
+
+
+@router.get("/me", response_model=UserResponse)
+async def me(current_user: CurrentUser) -> UserResponse:
+    return UserResponse.model_validate(current_user)
 
 
 def set_auth_cookies(response: Response, access_token: str, refresh_token: str) -> None:

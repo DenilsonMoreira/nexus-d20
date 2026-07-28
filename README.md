@@ -2,7 +2,7 @@
 
 Plataforma web para centralizar fichas, evolução de personagens, magias, inventário, durabilidade, viagens e preparação de campanhas de RPG usando **D&D 5e — regras de 2014** como base, com regras personalizáveis pelo mestre.
 
-> Estado atual: fundação executável do produto e especificação fechada para desenvolvimento incremental do MVP.
+> Estado atual: versão web responsiva 1.0.1, com autenticação, onboarding, fichas editáveis e jornadas separadas de mestre e jogador.
 
 ## Visão do produto
 
@@ -32,13 +32,17 @@ docker compose up --build
 
 Serviços:
 
-- Aplicação: http://localhost:3000
-- API: http://localhost:8000
-- Swagger: http://localhost:8000/docs
+- Aplicação: http://localhost:3200 (ou `WEB_PORT` do `.env`)
+- API: http://localhost:8200 (ou `API_PORT` do `.env`)
+- Swagger: http://localhost:8200/docs
 - MinIO Console: http://localhost:9001
 - Mailpit (e-mails locais): http://localhost:8025
 
 Credenciais locais padrão estão em `.env.example`. Troque todas antes de publicar.
+
+No primeiro acesso, crie uma conta. Um mestre pode criar campanha e personagem,
+gerar convites e alternar entre as fichas visíveis da campanha. Um jogador entra
+com o código recebido e cria ou edita somente a própria ficha.
 
 ## Comandos úteis
 

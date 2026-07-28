@@ -124,6 +124,27 @@
   gap: 10px;
 }
 
+.characterSelector {
+  display: grid;
+  gap: 4px;
+}
+
+.characterSelector span {
+  color: #9f9383;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.characterSelector select {
+  max-width: 190px;
+  padding: 9px 28px 9px 10px;
+  border: 1px solid #493b2c;
+  border-radius: 6px;
+  color: #e1c899;
+  background: #11110f;
+}
+
 .syncedStatus,
 .previewStatus {
   display: inline-flex;
@@ -153,6 +174,61 @@
   cursor: not-allowed;
   filter: saturate(0.35);
   opacity: 0.5;
+}
+
+.logoutButton {
+  border: 1px solid #40372d;
+  border-radius: 6px;
+  padding: 10px 13px;
+  color: #9f9383;
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  border-color: #806238;
+  color: #d7bd91;
+}
+
+.sessionLoading {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 32px;
+  color: #9f9382;
+  background:
+    radial-gradient(circle, rgba(120, 79, 34, 0.14), transparent 38%),
+    #080a0a;
+  text-align: center;
+}
+
+.sessionLoading > span {
+  color: #b88b4c;
+  font-size: 38px;
+}
+
+.sessionLoading strong,
+.sessionLoading h1 {
+  color: #e1cda9;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.sessionLoading h1,
+.sessionLoading p {
+  margin: 0;
+}
+
+.sessionLoading button {
+  margin-top: 12px;
+  border: 1px solid #8c6636;
+  border-radius: 6px;
+  padding: 11px 19px;
+  color: #e0bf87;
+  background: #2b1f13;
+  cursor: pointer;
 }
 
 .syncedStatus {
@@ -547,6 +623,11 @@
     width: 100%;
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .characterSelector select {
+    width: 100%;
+    max-width: none;
   }
 
   .editButton {

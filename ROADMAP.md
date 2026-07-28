@@ -4,6 +4,21 @@
 
 O produto será construído em fatias verticais. Cada fase deve produzir algo utilizável e testável. Não iniciar uma fase sem concluir os critérios de aceite da anterior.
 
+## Correção funcional 1.0.1
+
+**Status:** concluída em 28 de julho de 2026.
+
+- Autenticação e sessão expostas na interface web.
+- Onboarding de mestre e jogador com criação de campanha, convite e personagem.
+- Ficha editável e persistida, sem fallback silencioso para dados de demonstração.
+- Gestão de participantes e troca de ficha pelo mestre.
+- Swagger e viewport responsivo corrigidos.
+- Jornadas desktop e móvel cobertas por validação no navegador e regressão automatizada.
+
+**Aceite:** mestre e jogador completam suas jornadas em contas distintas; edição
+persiste após troca de sessão; documentação da API renderiza; frontend opera em
+desktop e no breakpoint móvel de 390×844.
+
 ## Fase 0 — Fundação do repositório
 
 **Status:** concluída em 18 de julho de 2026.
